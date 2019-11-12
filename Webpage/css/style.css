@@ -1,0 +1,55 @@
+body{    
+    color: white;   
+    font-size: 20px; 
+}
+
+.time{
+    font-size: 50px;
+}
+
+/* Weather css components */
+.weather{
+    width: 75%;
+    font-size: 20px;
+}
+
+.weather-title{
+    font-size: 23px;
+    margin-bottom: 10px;
+
+}
+
+.weather-hr{
+    background:white;
+}
+
+.weather-table{
+    width: 100%;
+    color:white;
+}
+
+/* Callendar css components */
+.calendar{
+    font-size: 20px;
+}
+
+.calendar-title{
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.calendar-item{
+    width: 50%;   
+
+}
+
+
+
+.calendar-item-text{
+    display:inline;
+    
+}
+
+.calendar-item-time{
+    float:right;
+}
