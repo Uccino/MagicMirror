@@ -3,5 +3,15 @@
     {
         "ip": "127.0.0.1",
         "port": 8000
+    },
+    "weather":
+    {
+        "key":"2b8af8fefc39ef0a0b8b41ab44342c51",        
+        "language":"nl",
+        "location":{
+            "name":"Arnhem, the Netherlands",
+            "latitude":"52.0003698",
+            "longitude":"5.9457117"
+        }
     }
 }
