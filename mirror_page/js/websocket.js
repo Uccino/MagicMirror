@@ -27,9 +27,9 @@ websocket.addEventListener('error', function (event) {
 
 // Event listener for when the server connection has been closed
 websocket.addEventListener('close', function (event) {
-    sleep(5000).then(() => {
-        location.reload();  
-    })    
+    // sleep(5000).then(() => {
+    //     location.reload();  
+    // })    
 });
 
 function ParseMessage(message)

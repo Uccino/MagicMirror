@@ -4,6 +4,7 @@ from datetime import datetime
 
 class OpenWeatherMap():
 
+    
     def __init__(self, api_key, language, latitude, longitude, locationName):
         self.ApiKey = api_key
         self.Language = language
@@ -47,26 +48,53 @@ class OpenWeatherMap():
         hourlyForecast = weatherInfo["hourly"]["data"]
         forecastList = []
         for i in range(0, 13):
-            forecastHour = self._ConvertUnixToDate(hourlyForecast[i]["time"])
+            forecastHour = self._GetHourFromUnixDate(hourlyForecast[i]["time"])
             forecast = {
                     "time": forecastHour,
-                    "summary": hourlyForecast[i]["summary"],
+                    "icon": hourlyForecast[i]["icon"],
                     "temperature": hourlyForecast[i]["temperature"]
                 }
         
             forecastList.append(forecast)
-        hourlyForecastDict = {"data": forecastList}
-        return hourlyForecastDict
+        forecast = {"data": forecastList}
+        return forecast
 
     # Parses the weather forecast to get the daily forecast
     def GetDailyForecast(self, weatherInfo):
-        pass
+        dailyForecast = weatherInfo["daily"]["data"]
+        forecastList = []
+        for i in range(0,7):
+            forecastTimeStamp = self._GetDateFromUnixStamp(dailyForecast[i]["time"])
+            weekString = self._GetDayNameFromDate(forecastTimeStamp)
+            forecast = {
+                "day":weekString,
+                "minTemp": dailyForecast[i]["temperatureMin"],
+                "maxTemp": dailyForecast[i]["temperatureMax"],
+                "icon":dailyForecast[i]["icon"]
+            }
+            forecastList.append(forecast)
+        forecast = {
+            "data": forecastList
+        }
+        return forecast
 
     # Converts the unix timestamp to human readable datetime
-    def _ConvertUnixToDate(self, unixTime):
+    def _GetHourFromUnixDate(self, unixTime):
         timestamp = datetime.fromtimestamp(unixTime)
         hour = timestamp.hour 
         return hour
+    
+    # Converts the unix timestamp to a day ( 1 - 31 )
+    def _GetDateFromUnixStamp(self, unixTime):
+        timestamp = datetime.fromtimestamp(unixTime)
+        return timestamp
+
+    # Returns the weekday as a string given a timestamp
+    def _GetDayNameFromDate(self, timestamp):
+        if(type(timestamp) == datetime):
+            return timestamp.strftime("%a")
+        else:
+            raise ValueError("Timestamp given was not in the correct format")
 
     # Builds the request url
     def _BuildUrl(self, apiKEy):

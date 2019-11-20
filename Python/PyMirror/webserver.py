@@ -1,21 +1,33 @@
 from flask import Flask
+from flask import render_template
 import logging
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder='./flask/templates',    
+    static_folder='./flask/static'
+)
 
-def StartServer():
+def main():
+    StartServer(True)
+
+def StartServer(debugValue = False):
     log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
+    
+    if debugValue == True:
+        log.setLevel(logging.DEBUG)
+    else:
+        log.setLevel(logging.ERROR)
 
-    app.run(debug=False)
+    app.run(debug=debugValue)
 
 @app.route('/')
 def index():
-    return "Hello, World!"
+    return render_template('index.html')
 
 @app.route('/login')
 def login():
-    return "Login"
+    return render_template('login.html')
 
 @app.route('/sendnews')
 def sendnews():
@@ -24,3 +36,6 @@ def sendnews():
 @app.route('/getnews')
 def getnews():
     return "Get the news!"
+
+if __name__ == '__main__':
+    main()

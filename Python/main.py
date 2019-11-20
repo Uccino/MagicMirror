@@ -8,8 +8,26 @@ import os
 import json
 import urllib
 import time
+import locale
+import os
 
 def main():
+
+    # Check if we're running on linux 
+    if os.name == "posix":
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        print("[!] YOU HAVEN'T SET THE LOCALE FOR LINUX YET ASSHAT [!]")
+        return
+    else:        
+        locale.setlocale(locale.LC_TIME,'nl-BE');        
+        pass
+
     serverConfig = ReadConfig()
     if serverConfig == None:
         print("[!] Unable to read the config file")
@@ -24,13 +42,18 @@ def main():
     if StartWebsocketServer(websocketServer) == False:
         print("[!] Unable to start the websocket server")
         return
+
     print("[x] Starting webserver thread")
     if StartWebserver() == False:
         print("[!] Unable to start the webserver")
         return
-    
+
     weatherApi = BuildWeatherApi(serverConfig)
+
+    forecast = GetWeatherInfo(weatherApi)
     
+    
+def GetWeatherInfo(weatherApi):
     weatherInfo = weatherApi.GetWeatherInfo()
 
     currentForecast = weatherApi.GetCurrentWeatherForecast(weatherInfo)
@@ -39,8 +62,11 @@ def main():
 
     forecast = {
         "current":currentForecast,
-        "hourly":hourlyForecast
+        "hourly":hourlyForecast,
+        "daily": dailyForecast
     }
+
+    return forecast
 
 # Builds the weather API class from the configuration file
 def BuildWeatherApi(serverConfig):
