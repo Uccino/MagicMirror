@@ -2,21 +2,27 @@
 {%block content%}
 <div class="columns is-centered">
     <div class="column is-5">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}    
+                {% for message in messages %}
+                    <div class="notification is-warning">{{message}}</div>
+                {% endfor %}    
+            {% endif %}
+        {% endwith %}
         <div class="card">
             <section class="section">
                 <form action="" method="post">
                     <div class="field">
                         <label class="label">Gebruikersnaam</label>
                         <div class="control">
-                            <input class="input" type="text" placeholder="Gebruikersnaam">
-                            
+                            <input class="input" type="text" placeholder="Gebruikersnaam" name="username">                            
                         </div>
                     </div>
 
                     <div class="field">
                         <label class="label">Wachtwoord</label>
                         <div class="control">
-                            <input class="input is-success" type="text" placeholder="Wachtwoord">
+                            <input class="input is-success" type="text" placeholder="Wachtwoord" name="password">
                         </div>
                     </div>
                     <br>

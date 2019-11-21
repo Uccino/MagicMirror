@@ -6,10 +6,10 @@ from    PyMirror.weatherapi         import OpenWeatherMap
 import threading
 import os
 import json
-import urllib
 import time
 import locale
 import os
+import requests
 
 def main():
 
@@ -35,6 +35,7 @@ def main():
 
     serverIp = serverConfig["websockets"]["ip"]
     serverPort = serverConfig["websockets"]["port"]
+    newsUrl = serverConfig["news"]["url"]
 
     websocketServer = WebSocketServer(serverIp, serverPort)
 
@@ -49,10 +50,25 @@ def main():
         return
 
     weatherApi = BuildWeatherApi(serverConfig)
-
     forecast = GetWeatherInfo(weatherApi)
+    news = GetNews(newsUrl)
+    if news is None:
+        print("[!] Unable to get the news!")
+    print("[!] ENOUGH FOR THE DAY........")
     
-    
+def GetNews(url):    
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            responseData = response.json()
+            return responseData
+        else:
+            return None
+    except Exception as generalException:
+        print("[!] Undefined error!")
+        print(generalException)
+        return None    
+
 def GetWeatherInfo(weatherApi):
     weatherInfo = weatherApi.GetWeatherInfo()
 
