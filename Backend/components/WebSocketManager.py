@@ -6,6 +6,8 @@ class WebSocketServer():
         self.ServerPort = port
         self.Server = wsServer(port, ip)
 
+        self.SetupServer()
+
     def SetupServer(self):
         self.Server.set_fn_client_left(self._ClientLeft)
         self.Server.set_fn_message_received(self._MessageReceived)

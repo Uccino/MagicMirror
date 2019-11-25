@@ -1,10 +1,9 @@
 import requests
 from datetime import datetime
 
+class OpenWeatherMap():    
 
-class OpenWeatherMap():
-
-    
+    # Constructor
     def __init__(self, api_key, language, latitude, longitude, locationName):
         self.ApiKey = api_key
         self.Language = language
