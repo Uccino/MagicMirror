@@ -49,19 +49,19 @@ def login_required(f):
             return f(*args, **kwargs)
         else:
             flash("Login to acces the news page")
-            return redirect('/login')
+            return redirect('/news/login')
 
     return wrap
 
 # Flask app routes are defined here
-@app.route('/')
+@app.route('/news')
 @login_required
 def index():
     all_posts = flask_models.Post.query.all()
     return render_template('index.html', data=all_posts)
 
 # Route for the login page
-@app.route('/login', methods=["POST", "GET"])
+@app.route('/news/login', methods=["POST", "GET"])
 def login():
     if request.method == "GET":
         if 'logged_in' in session:
@@ -79,7 +79,7 @@ def login():
             return redirect('/login')
 
 # Route for creating a new post
-@app.route('/sendnews', methods=["POST"])
+@app.route('/news/sendnews', methods=["POST"])
 @login_required
 def sendnews():
     postTitle = request.form['post_title']
@@ -91,7 +91,7 @@ def sendnews():
     return redirect('/')
 
 # Route for getting the latest news
-@app.route('/getnews',methods=["GET"])
+@app.route('/news/getnews',methods=["GET"])
 def getnews():
     all_posts = flask_models.Post.query.limit(5).all()
     print(type(all_posts))
@@ -99,6 +99,11 @@ def getnews():
         i.serialize() for i in all_posts
     ])
 
+@app.route("/mirror")
+def mirror():
+    return render_template("mirror.html")
+
 # This only gets used when we start the webserver.py via shell 
 if __name__ == '__main__':
-    StartServer( sys.argv[1], sys.argv[2],False)
+    print(f"{sys.argv[1]}, {sys.argv[2]}")
+    StartServer( sys.argv[1], sys.argv[2],True)

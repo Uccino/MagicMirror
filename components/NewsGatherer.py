@@ -20,4 +20,4 @@ class NewsRequester():
             return None
     
     def _BuildUrl(self):
-        contactUrl = f"http://{self.Host}:{self.Port}/getnews?amount={self.amount}"
+        contactUrl = f"http://{self.Host}:{self.Port}/getnews"

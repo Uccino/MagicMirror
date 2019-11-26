@@ -9,6 +9,8 @@ import os, sys
 import json
 import threading
 
+__PLATFORM = sys.platform
+
 # Main function
 def main():
     mirrorConfig = ReadConfig()
@@ -88,14 +90,23 @@ def StartWebsocketServer(config):
     except:        
         return None
 
-# Reads the config.json from the filea
+# Reads the config.json from the file
 def ReadConfig(path="./config.json"):
-    dir_path = os.path.dirname(os.path.realpath(__file__)) + "\config.json"    
-    if(not os.path.exists(dir_path)):        
-        return None
-    with open(dir_path, 'r') as jsonFile:
-        configData = json.load(jsonFile)
-        return configData
+    if __PLATFORM == "win32":
+        dir_path = os.path.dirname(os.path.realpath(__file__)) + "\config.json"    
+        if(not os.path.exists(dir_path)):        
+            return None
+        with open(dir_path, 'r') as jsonFile:
+            configData = json.load(jsonFile)
+            return configData
+    elif __PLATFORM == "linux":
+        dir_path = os.path.dirname(os.path.realpath(__file__)) + "/config.json"    
+        print(dir_path)
+        if(not os.path.exists(dir_path)):        
+            return None
+        with open(dir_path, 'r') as jsonFile:
+            configData = json.load(jsonFile)
+            return configData
 
 # Entry point of the program
 if __name__ == '__main__':
