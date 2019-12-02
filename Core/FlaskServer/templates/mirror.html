@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='mirror_css/bulma.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='mirror_css/all.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='mirror_css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='mirror_css/weather-icons.min.css')}}">
+    <script defer src="{{url_for('static', filename='mirror_js/all.js')}}"></script>
+    <script defer src="{{url_for('static', filename='mirror_js/functions.js')}}"></script>
+</head>
+
+<body>
+    <section class="section" style="height: 100vh;">
+        <div class="columns is-multiline">
+            <div class="column is-4">
+                <div id="time-text" class="time">
+                </div>
+            </div>
+            <div class="column"></div>
+            <div class="column is-5">
+                <div class="module" id="module" style="width: 100%;">
+                    
+                </div>
+            </div>
+            <div class="column is-4">
+
+            </div>
+        </div>
+        <div class="notifications">
+            <div class="columns is-vcentered">
+                <div class="column has-text-centered">
+                    <p class="text is-size-2">Ducks are 💙</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script defer src="{{url_for('static', filename='mirror_js/websocket.js')}}"></script>
+</body>
+
+</html>
