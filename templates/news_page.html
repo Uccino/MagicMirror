@@ -1,0 +1,10 @@
+<ul>
+    {% for item in data.posts %}    
+    <li style="margin-bottom: 10px;">
+        <div class="newsitem">
+            <h1 class="title is-size-4">{{item.title}}</h1>
+            <p class="is-size-6">{{item.content}}</p>
+        </div>
+    </li>
+    {% endfor %}    
+</ul>

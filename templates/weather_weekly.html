@@ -1,0 +1,18 @@
+<p class="weather-title">{{data.location}}</p>
+<hr class="weather-hr">
+<table class="weather-table">
+    <tr class="weather-table-head">
+        <th></th>
+        <th></th>
+        <th class="set-white">Min</th>
+        <th class="set-white">Max</th>
+    </tr>
+    {% for item in data.data %}
+    <tr>
+        <th class="set-white">{{item.day}}</th>
+        <th class="set-white"><i class="wi {{item.icon}}"></i></th>
+        <th class="set-white">{{item.minTemp}}°C</th>
+        <th class="set-white">{{item.maxTemp}}°C</th>        
+    </tr> 
+    {% endfor %}
+</table>
