@@ -1,7 +1,59 @@
 from datetime import datetime
+from Modules.MirrorPage import MirrorPage
 from enum import Enum
 import requests
 
+class WeatherPage(MirrorPage):
+    
+    class Page(Enum):
+        Hourly = 0
+        Daily = 1
+        Weekly = 2
+
+    def __init__(self, mirrorConfig, htmlBuilder):
+
+        self.ApiKey = mirrorConfig["weather"]["key"]
+        self.Language = mirrorConfig["weather"]["language"]
+        self.LocName = mirrorConfig["weather"]["location"]["name"]
+        self.LocLatitude = mirrorConfig["weather"]["location"]["latitude"]
+        self.LocLongitude = mirrorConfig["weather"]["location"]["longitude"]
+
+        self.ApiSource = DarkSkyWeather(self.ApiKey, self.Language,self.LocLatitude, self.LocLongitude, self.LocName)
+        self.CurrentPage = self.Page.Weekly
+        self.PageBuilder = htmlBuilder
+
+    def ZoomIn(self):
+        if self.currentPage == self.Page.Daily:
+            self.currentPage = self.Page.Hourly            
+        elif self.currentPage == self.Page.Weekly:
+            self.currentPage = self.Page.Daily           
+        elif self.currentPage == self.Page.Hourly:
+            pass  
+        
+    def ZoomOut(self):
+        if self.currentPage == self.Page.Daily:
+            self.currentPage = self.Page.Weekly            
+        elif self.currentPage == self.Page.Weekly:
+            pass
+        elif self.currentPage ==self. Page.Hourly:
+            self.currentPage = self.Page.Daily
+    
+    def GetPageData(self):
+        weatherInfo = self.ApiSource.GetWeatherInfo()
+        if self.CurrentPage == self.Page.Daily:
+            return self.ApiSource.GetCurrentWeatherForecast(weatherInfo)
+        elif self.CurrentPage == self.Page.Weekly:
+            return self.ApiSource.GetDailyForecast(weatherInfo)
+        elif self.CurrentPage == self.Page.Hourly:
+            return self.ApiSource.GetHourlyWeatherForecast(weatherInfo)
+
+    def BuildPageMarkup(self, pageData):
+        if self.CurrentPage == self.Page.Hourly:
+            return self.PageBuilder.BuildTemplate("weather_hourly.html", pageData)
+        elif self.CurrentPage == self.Page.Daily:
+            return self.PageBuilder.BuildTemplate("weather_daily.html", pageData)
+        elif self.CurrentPage == self.Page.Weekly:
+            return self.PageBuilder.BuildTemplate("weather_weekly.html", pageData)
 
 class DarkSkyWeather():    
 
@@ -131,55 +183,3 @@ class DarkSkyWeather():
     def _BuildUrl(self, apiKey):
         url = f'https://api.darksky.net/forecast/{apiKey}/{self.Lat},{self.Long}?lang={self.Language}&units=si'
         return url
-
-class WeatherPage():
-    
-    class Page(Enum):
-        Hourly = 0
-        Daily = 1
-        Weekly = 2
-
-    def __init__(self, mirrorConfig, htmlBuilder):
-
-        self.ApiKey = mirrorConfig["weather"]["key"]
-        self.Language = mirrorConfig["weather"]["language"]
-        self.LocName = mirrorConfig["weather"]["location"]["name"]
-        self.LocLatitude = mirrorConfig["weather"]["location"]["latitude"]
-        self.LocLongitude = mirrorConfig["weather"]["location"]["longitude"]
-
-        self.ApiSource = DarkSkyWeather(self.ApiKey, self.Language,self.LocLatitude, self.LocLongitude, self.LocName)
-        self.CurrentPage = self.Page.Weekly
-        self.PageBuilder = htmlBuilder
-
-    def ZoomIn(self):
-        if self.currentPage == self.Page.Daily:
-            self.currentPage = self.Page.Hourly            
-        elif self.currentPage == self.Page.Weekly:
-            self.currentPage = self.Page.Daily           
-        elif self.currentPage == self.Page.Hourly:
-            pass  
-        
-    def ZoomOut(self):
-        if self.currentPage == self.Page.Daily:
-            self.currentPage = self.Page.Weekly            
-        elif self.currentPage == self.Page.Weekly:
-            pass
-        elif self.currentPage ==self. Page.Hourly:
-            self.currentPage = self.Page.Daily
-    
-    def GetPageData(self):
-        weatherInfo = self.ApiSource.GetWeatherInfo()
-        if self.CurrentPage == self.Page.Daily:
-            return self.ApiSource.GetCurrentWeatherForecast(weatherInfo)
-        elif self.CurrentPage == self.Page.Weekly:
-            return self.ApiSource.GetDailyForecast(weatherInfo)
-        elif self.CurrentPage == self.Page.Hourly:
-            return self.ApiSource.GetHourlyWeatherForecast(weatherInfo)
-
-    def BuildPageMarkup(self, pageData):
-        if self.CurrentPage == self.Page.Hourly:
-            return self.PageBuilder.BuildTemplate("weather_hourly.html", pageData)
-        elif self.CurrentPage == self.Page.Daily:
-            return self.PageBuilder.BuildTemplate("weather_daily.html", pageData)
-        elif self.CurrentPage == self.Page.Weekly:
-            return self.PageBuilder.BuildTemplate("weather_weekly.html", pageData)

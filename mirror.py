@@ -18,9 +18,10 @@ def main():
     if mirrorConfig == None:
         print("[!] Unable to read the configuration file!")
         return
-    
+
     pageBuilder = HtmlBuilder()
 
+    # All the pages we're going to use
     pages = [
         News.NewsPage(mirrorConfig,pageBuilder),
         Weather.WeatherPage(mirrorConfig,pageBuilder )        
