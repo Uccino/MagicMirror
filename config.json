@@ -1,25 +1,34 @@
 {
-    "websockets":
-    {
+    "websockets": {
         "ip": "127.0.0.1",
         "port": 4444
     },
-    "webserver":
-    {
+    "webserver": {
         "ip": "0.0.0.0",
         "port": 8080
     },
-    "weather":
-    {
-        "key":"2b8af8fefc39ef0a0b8b41ab44342c51",        
-        "language":"nl",
-        "location":{
-            "name":"Arnhem, the Netherlands",
-            "latitude":"52.0003698",
-            "longitude":"5.9457117"
+    "weather": {
+        "key": "2b8af8fefc39ef0a0b8b41ab44342c51",
+        "language": "nl",
+        "location": {
+            "name": "Arnhem, the Netherlands",
+            "latitude": "52.0003698",
+            "longitude": "5.9457117"
         }
-    },
-    "news":{
-        "url":"http://localhost:8080/news/getnews"
+    },    
+    "news": {
+        "url": "http://localhost:8080/news/getnews"
+    },    
+    "installed": {
+        "client_id": "428652087031-fj525lusu336fepnf53b70gl3ndep2mm.apps.googleusercontent.com",
+        "project_id": "quickstart-1575380015673",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": "28Og8g1Kg7vTJr1rWw6_1b2L",
+        "redirect_uris": [
+            "urn:ietf:wg:oauth:2.0:oob",
+            "http://localhost"
+        ]
     }
 }
