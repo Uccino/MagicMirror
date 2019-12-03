@@ -3,7 +3,7 @@ from Core.PageManager import PageManager
 from Core.Webserver import Webserver
 from Core.Websockets import WebSocketServer
 from Core.InputManager import InputGetter
-from Modules import News, Weather
+from Modules import News, Weather, Calendar
 
 import os, sys
 import json
@@ -23,6 +23,7 @@ def main():
 
     # All the pages we're going to use
     pages = [
+        Calendar.CalendarPage(mirrorConfig, pageBuilder),
         News.NewsPage(mirrorConfig,pageBuilder),
         Weather.WeatherPage(mirrorConfig,pageBuilder )        
     ]
@@ -31,7 +32,8 @@ def main():
     
     while 1:
         pageData = pageManager.GetPageData()
-        print(pageManager.GetPageMarkup(pageData))
+        if pageData is not None:
+            print(pageManager.GetPageMarkup(pageData))
         time.sleep(60)
 
 # Reads the config.json from the file

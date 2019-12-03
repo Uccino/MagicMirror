@@ -1,0 +1,20 @@
+<p class="weather-title">Agenda</p>
+<hr class="weather-hr">
+<table class="weather-table">
+    <tr class="weather-table-head">
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+    {% for item in data %}
+    <tr>
+        <th class="set-white"><i class="far fa-calendar-alt fa-1x"></i></th>
+        <th class="set-white">
+            <p class="is-size-6">{{item.summary}}</p>
+        </th>
+        <th class="set-white">
+            <p class="is-size-6">{{item.start_date}}</p>
+        </th>
+    </tr>
+    {% endfor %}    
+</table>
