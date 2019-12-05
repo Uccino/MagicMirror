@@ -10,6 +10,7 @@ import json
 import threading
 import webview
 import time
+import base64
 
 __PLATFORM = sys.platform
 
@@ -20,6 +21,20 @@ def main():
         return
 
     pageBuilder = HtmlBuilder()
+
+    websocketIp = mirrorConfig["websockets"]["ip"]
+    websocketPort = mirrorConfig["websockets"]["port"]
+
+    wsServer = WebSocketServer(websocketIp, websocketPort)
+    if StartWebsocketThread(wsServer) == False:
+        print("[!] Unable to start the websocket server! ")
+        return
+    
+    if StartWebserver(mirrorConfig) == False:
+        print("[!] Unable to start the webserver! ")
+        return
+    
+    StartWebview(mirrorConfig)
 
     # All the pages we're going to use
     pages = [
@@ -33,8 +48,48 @@ def main():
     while 1:
         pageData = pageManager.GetPageData()
         if pageData is not None:
-            print(pageManager.GetPageMarkup(pageData))
+            pageMarkup = pageManager.GetPageMarkup(pageData)
+            SendMirrorPage(wsServer, pageMarkup)
         time.sleep(60)
+
+def StartWebsocketThread(websocketServer):
+    websocketThread = threading.Thread(target=websocketServer.StartServer)
+    websocketThread.daemon = True
+    try:
+        websocketThread.start()
+        return True
+    except:
+        return False
+
+def StartWebserver(mirrorConfig):
+    serverIp = mirrorConfig["webserver"]["ip"]
+    serverPort = mirrorConfig["webserver"]["port"]
+    wServer = Webserver(serverIp, serverPort)
+    websocketThread = threading.Thread(target=wServer.StartServer)
+    websocketThread.daemon = True
+    try:
+        websocketThread.start()
+        return True
+    except:
+        return False
+
+def SendMirrorPage(websocketServer, data):
+    pageData = {
+        "type": "mirror_page",
+        "data":data
+    }
+    b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
+    websocketServer.SendMessage(b64data)
+
+def StartWebview(config):
+    serverIp = config["webserver"]["ip"]
+    serverPort = config["webserver"]["port"]
+    url = f"http://{serverIp}:{serverPort}/mirror"
+
+    webview.create_window("SmartMirror", url=url)
+    webviewThread = threading.Thread(target=webview.start, name="MainThread")
+    webviewThread.daemon = True
+    webviewThread.start()
 
 # Reads the config.json from the file
 def ReadConfig(path="./config.json"):

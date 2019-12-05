@@ -14,7 +14,7 @@ class Webserver():
         # If we're running on windows
         if self.platform == "win32":
             try:                
-                serverCommand =f"python ./FlaskServer/app.py {self.Host} {self.Port}"            
+                serverCommand =f"python ./Core/FlaskServer/app.py {self.Host} {self.Port}"            
                 subprocess.run(serverCommand)
             except:                
                 return False

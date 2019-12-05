@@ -1,7 +1,7 @@
 {
     "websockets": {
         "ip": "127.0.0.1",
-        "port": 4444
+        "port": 8000
     },
     "webserver": {
         "ip": "0.0.0.0",

@@ -32,7 +32,25 @@ websocket.addEventListener('close', function (event) {
     // })    
 });
 
+function base64DecodeUnicode(str) {
+    // Convert Base64 encoded bytes to percent-encoding, and then get the original string.
+    percentEncodedStr = atob(str).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join('');
+
+
+    return decodeURIComponent(percentEncodedStr);
+}
+
 function ParseMessage(message)
-{
-    console.log(message);
+{    
+    jsonObject = JSON.parse(base64DecodeUnicode(message));
+    if(jsonObject.type == "mirror_page")
+    {
+        document.getElementById("module").innerHTML = jsonObject.data;
+    }
+    else if(jsonObject.type == "mirror_notification")
+    {
+        document.getElementById("mirror-notification").innerHTML = jsonObject.data;
+    }
 }
