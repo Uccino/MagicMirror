@@ -1,7 +1,7 @@
 class InputGetter():
     def __init__(self, pageManager):
         self.PageManager = pageManager
-
+        
     def GetKeyboardInput(self):
         inp = None
         while inp != 'q':
@@ -14,3 +14,5 @@ class InputGetter():
                 self.PageManager.PreviousPage()
             elif inp == 'd':
                 self.PageManager.NextPage()
+            
+            self.PageManager.DisplayMirrorPage()

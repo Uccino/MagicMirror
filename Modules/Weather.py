@@ -23,20 +23,20 @@ class WeatherPage(MirrorPage):
         self.PageBuilder = htmlBuilder
 
     def ZoomIn(self):
-        if self.currentPage == self.Page.Daily:
-            self.currentPage = self.Page.Hourly            
-        elif self.currentPage == self.Page.Weekly:
-            self.currentPage = self.Page.Daily           
-        elif self.currentPage == self.Page.Hourly:
+        if self.CurrentPage == self.Page.Daily:
+            self.CurrentPage = self.Page.Hourly            
+        elif self.CurrentPage == self.Page.Weekly:
+            self.CurrentPage = self.Page.Daily           
+        elif self.CurrentPage == self.Page.Hourly:
             pass  
         
     def ZoomOut(self):
-        if self.currentPage == self.Page.Daily:
-            self.currentPage = self.Page.Weekly            
-        elif self.currentPage == self.Page.Weekly:
+        if self.CurrentPage == self.Page.Daily:
+            self.CurrentPage = self.Page.Weekly            
+        elif self.CurrentPage == self.Page.Weekly:
             pass
-        elif self.currentPage ==self. Page.Hourly:
-            self.currentPage = self.Page.Daily
+        elif self.CurrentPage ==self. Page.Hourly:
+            self.CurrentPage = self.Page.Daily
     
     def GetPageData(self):
         weatherInfo = self.ApiSource.GetWeatherInfo()
@@ -89,7 +89,7 @@ class DarkSkyWeather():
             "location": self.Name,
             "summary": currentForecast["summary"],
             "temperature": currentForecast["temperature"],
-            "icon": self._GetWeatherIcon(self.currentForecast["icon"])
+            "icon": self._GetWeatherIcon(currentForecast["icon"])
         }
         forecast = {
             "location": self.Name,

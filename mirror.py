@@ -43,14 +43,17 @@ def main():
         Weather.WeatherPage(mirrorConfig,pageBuilder )        
     ]
     
-    pageManager = PageManager(pages)
+    pageManager = PageManager(pages, wsServer)
+    pageManager.DisplayMirrorPage()
+
+    inputManager = InputGetter(pageManager)
+    inputThread = threading.Thread(target=inputManager.GetKeyboardInput)
+    inputThread.start()
     
-    while 1:
-        pageData = pageManager.GetPageData()
-        if pageData is not None:
-            pageMarkup = pageManager.GetPageMarkup(pageData)
-            SendMirrorPage(wsServer, pageMarkup)
-        time.sleep(60)
+    
+
+
+
 
 def StartWebsocketThread(websocketServer):
     websocketThread = threading.Thread(target=websocketServer.StartServer)
@@ -73,9 +76,9 @@ def StartWebserver(mirrorConfig):
     except:
         return False
 
-def SendMirrorPage(websocketServer, data):
+def SendMirrorNotification(websocketServer, data):
     pageData = {
-        "type": "mirror_page",
+        "type": "mirror_notification",
         "data":data
     }
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
