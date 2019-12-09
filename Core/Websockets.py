@@ -11,6 +11,7 @@ class WebSocketServer():
     def SetupServer(self):
         self.Server.set_fn_client_left(self._ClientLeft)
         self.Server.set_fn_message_received(self._MessageReceived)
+        self.Server.set_fn_new_client(self._ClientConnected)
 
     def StartServer(self):
         try:
@@ -28,6 +29,9 @@ class WebSocketServer():
 
     def _ClientLeft(self, client, server):
         print("[!] Client disconnected!")
+    
+    def _ClientConnected(self, client, server):
+        print("[x] Client connected!")
 
     def _MessageReceived(self, client, server, message):
         print(f"[x] Message recieved: {message}")

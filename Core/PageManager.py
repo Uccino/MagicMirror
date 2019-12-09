@@ -1,9 +1,10 @@
 import base64, json
+import time
 
 class PageManager():
 
     # Constructor
-    def __init__(self, pages, websocketServer):
+    def __init__(self, pages):
         self.PageCount = len(pages)
         self.PageIndex = 0 
 
@@ -14,23 +15,7 @@ class PageManager():
             self.Pages.append(mirrorPage)
         
         self.CurrentPage = self.Pages[self.PageIndex]
-        self.WebsocketServer = websocketServer
-
-    # Displays the page
-    def DisplayMirrorPage(self):
-        mirrorPage = self.CurrentPage
-        pageData = mirrorPage.GetPageData()
-        pageMarkup = mirrorPage.BuildPageMarkup(pageData)
-        self._SendMirrorPage(pageMarkup)
-    
-    def _SendMirrorPage(self, data):
-
-        pageData = {
-            "type": "mirror_page",
-            "data":data
-        }
-        b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
-        self.WebsocketServer.SendMessage(b64data)
+        
 
     # Function gets called when the zoom in gesture is made
     def ZoomIn(self):
@@ -41,8 +26,7 @@ class PageManager():
         self.CurrentPage.ZoomOut()
 
     # Function gets called when we swipe right
-    def NextPage(self):
-        print("NextPage!")
+    def NextPage(self):        
         if self.PageIndex + 1 == self.PageCount:
             pass
         else:
@@ -57,13 +41,13 @@ class PageManager():
             self.PageIndex -= 1
             self.CurrentPage = self.Pages[self.PageIndex]
 
-    # # Gets the page data 
-    # def _GetPageData(self):
-    #     mirrorPage = self.CurrentPage
-    #     pageData = mirrorPage.GetPageData()
-    #     return pageData
+    # Returns the HTML of the currently displayed page
+    def GetPageMarkup(self):
+        mirrorPage = self.CurrentPage
+        return mirrorPage.GetPageMarkup()
     
-    # # Builds the page markup
-    # def _GetPageMarkup(self, pageData):
-    #     mirrorPage = self.CurrentPage
-    #     return mirrorPage.BuildPageMarkup(pageData)
+    def UpdatePages(self):
+        while 1:
+            for i in range(0, len(self.Pages)):
+                self.Pages[i].BuildPageMarkup()
+            time.sleep(180)

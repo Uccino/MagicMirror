@@ -38,22 +38,36 @@ def main():
 
     # All the pages we're going to use
     pages = [
+        Weather.WeatherPage(mirrorConfig,pageBuilder ),
         Calendar.CalendarPage(mirrorConfig, pageBuilder),
-        News.NewsPage(mirrorConfig,pageBuilder),
-        Weather.WeatherPage(mirrorConfig,pageBuilder )        
+        News.NewsPage(mirrorConfig,pageBuilder)
     ]
-    
-    pageManager = PageManager(pages, wsServer)
-    pageManager.DisplayMirrorPage()
 
-    inputManager = InputGetter(pageManager)
-    inputThread = threading.Thread(target=inputManager.GetKeyboardInput)
-    inputThread.start()
-    
-    
+    pageManager = PageManager(pages)
 
+    updateThread = threading.Thread(target=pageManager.UpdatePages, daemon=True)
+    updateThread.start()
 
+    while 1:
+        markup = pageManager.GetPageMarkup()
+        SendMirrorPage(wsServer, markup)
+        time.sleep(10)
 
+def SendMirrorPage(websocketServer, data):
+    pageData = {
+        "type": "mirror_page",
+        "data":data
+    }
+    b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
+    websocketServer.SendMessage(b64data)
+
+def SendMirrorNotification(websocketServer, data):
+    pageData = {
+        "type": "mirror_notification",
+        "data":data
+    }
+    b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
+    websocketServer.SendMessage(b64data)
 
 def StartWebsocketThread(websocketServer):
     websocketThread = threading.Thread(target=websocketServer.StartServer)
@@ -76,18 +90,11 @@ def StartWebserver(mirrorConfig):
     except:
         return False
 
-def SendMirrorNotification(websocketServer, data):
-    pageData = {
-        "type": "mirror_notification",
-        "data":data
-    }
-    b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
-    websocketServer.SendMessage(b64data)
-
 def StartWebview(config):
     serverIp = config["webserver"]["ip"]
     serverPort = config["webserver"]["port"]
-    url = f"http://{serverIp}:{serverPort}/mirror"
+    serverUrl = f"http://{serverIp}:{serverPort}/mirror"   
+    url = serverUrl
 
     webview.create_window("SmartMirror", url=url)
     webviewThread = threading.Thread(target=webview.start, name="MainThread")

@@ -23,6 +23,7 @@ app.secret_key = 'SUPERSECRETKEYSKRKT'
 
 # Database setup
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///news_site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # We import the models **AFTER** initializing the database
@@ -93,8 +94,7 @@ def sendnews():
 # Route for getting the latest news
 @app.route('/news/getnews',methods=["GET"])
 def getnews():
-    all_posts = flask_models.Post.query.limit(5).all()
-    print(type(all_posts))
+    all_posts = flask_models.Post.query.limit(5).all()    
     return jsonify(posts = [
         i.serialize() for i in all_posts
     ])

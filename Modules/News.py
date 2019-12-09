@@ -9,6 +9,7 @@ class NewsPage(MirrorPage):
         self.NewsHost = mirrorConfig["news"]["url"]
         self.ApiSource = NewsRequester(self.NewsHost)
         self.PageBuilder = htmlBuilder
+        self.PageMarkup = None
 
     def ZoomIn(self):
         pass
@@ -19,8 +20,12 @@ class NewsPage(MirrorPage):
     def GetPageData(self):        
         return self.ApiSource.GetNews()
 
-    def BuildPageMarkup(self, data):
-        return self.PageBuilder.BuildTemplate("news_page.html", data)
+    def BuildPageMarkup(self):
+        pageData = self.GetPageData()
+        self.PageMarkup =  self.PageBuilder.BuildTemplate("news_page.html", pageData)
+    
+    def GetPageMarkup(self):
+        return self.PageMarkup
 
 class NewsRequester():
         

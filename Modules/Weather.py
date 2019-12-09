@@ -22,6 +22,10 @@ class WeatherPage(MirrorPage):
         self.CurrentPage = self.Page.Weekly
         self.PageBuilder = htmlBuilder
 
+        self.HourlyPageMarkup = None
+        self.DailyPageMarkup = None
+        self.WeeklyPageMarkup = None
+
     def ZoomIn(self):
         if self.CurrentPage == self.Page.Daily:
             self.CurrentPage = self.Page.Hourly            
@@ -38,22 +42,28 @@ class WeatherPage(MirrorPage):
         elif self.CurrentPage ==self. Page.Hourly:
             self.CurrentPage = self.Page.Daily
     
+    def GetPageMarkup(self):
+        if self.CurrentPage == self.Page.Daily:
+            return self.DailyPageMarkup
+        elif self.CurrentPage == self.Page.Weekly:
+            return self.WeeklyPageMarkup
+        elif self.CurrentPage == self.Page.Hourly:
+            return self.HourlyPageMarkup
+
     def GetPageData(self):
         weatherInfo = self.ApiSource.GetWeatherInfo()
-        if self.CurrentPage == self.Page.Daily:
-            return self.ApiSource.GetCurrentWeatherForecast(weatherInfo)
-        elif self.CurrentPage == self.Page.Weekly:
-            return self.ApiSource.GetDailyForecast(weatherInfo)
-        elif self.CurrentPage == self.Page.Hourly:
-            return self.ApiSource.GetHourlyWeatherForecast(weatherInfo)
+        return weatherInfo        
 
-    def BuildPageMarkup(self, pageData):
-        if self.CurrentPage == self.Page.Hourly:
-            return self.PageBuilder.BuildTemplate("weather_hourly.html", pageData)
-        elif self.CurrentPage == self.Page.Daily:
-            return self.PageBuilder.BuildTemplate("weather_daily.html", pageData)
-        elif self.CurrentPage == self.Page.Weekly:
-            return self.PageBuilder.BuildTemplate("weather_weekly.html", pageData)
+    def BuildPageMarkup(self):        
+        weatherData = self.GetPageData()
+
+        hourlyData = self.ApiSource.GetHourlyWeatherForecast(weatherData)
+        dailyData = self.ApiSource.GetCurrentWeatherForecast(weatherData)
+        weeklyData = self.ApiSource.GetDailyForecast(weatherData)
+
+        self.HourlyPageMarkup = self.PageBuilder.BuildTemplate("weather_hourly.html", hourlyData)
+        self.DailyPageMarkup =  self.PageBuilder.BuildTemplate("weather_daily.html", dailyData)
+        self.WeeklyPageMarkup =  self.PageBuilder.BuildTemplate("weather_weekly.html", weeklyData)
 
 class DarkSkyWeather():    
 

@@ -11,7 +11,15 @@ class CalendarPage(MirrorPage):
     def __init__(self, mirrorConfig, pageBuilder):
         self.ApiSource = CalendarRequester()
         self.PageBuilder = pageBuilder
+        self.PageMarkup = None
     
+    def BuildPageMarkup(self):
+        pageData = self.GetPageData()
+        self.PageMarkup = self.PageBuilder.BuildTemplate("calendar_page.html", pageData)
+
+    def GetPageMarkup(self):
+        return self.PageMarkup
+
     def ZoomIn(self):
         pass
 
@@ -20,10 +28,7 @@ class CalendarPage(MirrorPage):
 
     def GetPageData(self):
         return self.ApiSource.GetEvents(10)
-
-    def BuildPageMarkup(self, data):
-        return self.PageBuilder.BuildTemplate("calendar_page.html", data)
-
+    
 class CalendarRequester():
     def __init__(self):
         self.CalendarApi = self.InitializeApi()
