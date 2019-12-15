@@ -65,9 +65,6 @@ class WeatherPage(MirrorPage):
         self.DailyPageMarkup =  self.PageBuilder.BuildTemplate("weather_daily.html", dailyData)
         self.WeeklyPageMarkup =  self.PageBuilder.BuildTemplate("weather_weekly.html", weeklyData)
 
-    def BuildPageNotification(self):
-        pass
-
 class DarkSkyWeather():    
 
     # Constructor

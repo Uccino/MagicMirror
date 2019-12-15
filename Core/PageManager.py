@@ -15,7 +15,8 @@ class PageManager():
             self.Pages.append(mirrorPage)
         
         self.CurrentPage = self.Pages[self.PageIndex]
-    
+        
+
     # Function gets called when the zoom in gesture is made
     def ZoomIn(self):
         self.CurrentPage.ZoomIn()
@@ -45,22 +46,8 @@ class PageManager():
         mirrorPage = self.CurrentPage
         return mirrorPage.GetPageMarkup()
     
-    # Gets all the data from each page
-    def UpdatePageData(self):
-        for i in range(0, len(self.Pages)):
-            self.Pages[i].BuildPageMarkup()
-    
-    # Updates the notifications from each page
-    def UpdatePageNotifications(self):
-        for i in range(0, len(self.Pages)):
-            self.Pages[i].BuildPageNotification()
-    
-    def GetNotifications(self):
-        notifications = []
-        for i in range(0, len(self.Pages)):
-            page_notifications = self.Pages[i].GetNotifications()
-            notifications.append(page_notifications)
-        
-        return notifications
-
-
+    def UpdatePages(self):
+        while 1:
+            for i in range(0, len(self.Pages)):
+                self.Pages[i].BuildPageMarkup()
+            time.sleep(180)

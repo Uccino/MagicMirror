@@ -25,40 +25,34 @@ def main():
     websocketIp = mirrorConfig["websockets"]["ip"]
     websocketPort = mirrorConfig["websockets"]["port"]
 
-    # wsServer = WebSocketServer(websocketIp, websocketPort)
-    # if StartWebsocketThread(wsServer) == False:
-    #     print("[!] Unable to start the websocket server! ")
-    #     return
+    wsServer = WebSocketServer(websocketIp, websocketPort)
+    if StartWebsocketThread(wsServer) == False:
+        print("[!] Unable to start the websocket server! ")
+        return
     
-    # if StartWebserver(mirrorConfig) == False:
-    #     print("[!] Unable to start the webserver! ")
-    #     return
+    if StartWebserver(mirrorConfig) == False:
+        print("[!] Unable to start the webserver! ")
+        return
     
-    # StartWebview(mirrorConfig)
+    StartWebview(mirrorConfig)
 
     # All the pages we're going to use
     pages = [
+        Weather.WeatherPage(mirrorConfig,pageBuilder ),
         Calendar.CalendarPage(mirrorConfig, pageBuilder),
-        Weather.WeatherPage(mirrorConfig,pageBuilder ),        
         News.NewsPage(mirrorConfig,pageBuilder)
     ]
 
     pageManager = PageManager(pages)
 
-    pageManager.UpdatePageData()
-    pageManager.UpdatePageNotifications()
+    updateThread = threading.Thread(target=pageManager.UpdatePages, daemon=True)
+    updateThread.start()
 
-    pageManager.GetNotifications()
+    while 1:
+        markup = pageManager.GetPageMarkup()
+        SendMirrorPage(wsServer, markup)
+        time.sleep(10)
 
-    # dataUpdateThread = threading.Thread(target=pageManager.UpdatePageData, daemon=True)
-    # dataUpdateThread.start()
-
-    # while 1:
-    #     markup = pageManager.GetPageMarkup()
-    #     SendMirrorPage(wsServer, markup)
-    #     time.sleep(10)
-
-# Sends data to the smart mirror over websockets
 def SendMirrorPage(websocketServer, data):
     pageData = {
         "type": "mirror_page",
@@ -67,7 +61,6 @@ def SendMirrorPage(websocketServer, data):
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
     websocketServer.SendMessage(b64data)
 
-# Sends the notification text to websockets
 def SendMirrorNotification(websocketServer, data):
     pageData = {
         "type": "mirror_notification",
@@ -76,7 +69,6 @@ def SendMirrorNotification(websocketServer, data):
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
     websocketServer.SendMessage(b64data)
 
-# Starts the websocket server thread
 def StartWebsocketThread(websocketServer):
     websocketThread = threading.Thread(target=websocketServer.StartServer)
     websocketThread.daemon = True
@@ -86,7 +78,6 @@ def StartWebsocketThread(websocketServer):
     except:
         return False
 
-# Starts the webserver thread
 def StartWebserver(mirrorConfig):
     serverIp = mirrorConfig["webserver"]["ip"]
     serverPort = mirrorConfig["webserver"]["port"]
@@ -99,7 +90,6 @@ def StartWebserver(mirrorConfig):
     except:
         return False
 
-# Starts the pywebview
 def StartWebview(config):
     serverIp = config["webserver"]["ip"]
     serverPort = config["webserver"]["port"]
