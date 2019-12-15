@@ -27,6 +27,9 @@ class NewsPage(MirrorPage):
     def GetPageMarkup(self):
         return self.PageMarkup
 
+    def BuildPageNotification(self):
+        pass
+
 class NewsRequester():
         
     def __init__(self, url):

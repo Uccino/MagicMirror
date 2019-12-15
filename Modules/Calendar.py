@@ -4,6 +4,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from dateutil import parser
 import datetime
+from dateutil import parser
 import pickle
 import os.path
 
@@ -12,6 +13,8 @@ class CalendarPage(MirrorPage):
         self.ApiSource = CalendarRequester()
         self.PageBuilder = pageBuilder
         self.PageMarkup = None
+        self.PageData = None
+        self.UpcomingEvents = []
     
     def BuildPageMarkup(self):
         pageData = self.GetPageData()
@@ -27,8 +30,31 @@ class CalendarPage(MirrorPage):
         pass
 
     def GetPageData(self):
-        return self.ApiSource.GetEvents(10)
+        self.PageData = self.ApiSource.GetEvents(10)
+        return self.PageData
     
+    def GetNotifications(self):
+        eventNotifications = []
+        for i in range(0,len(self.UpcomingEvents)):
+            eventNotif = "Over {} dagen: {}!"
+            eventNotifications.append(eventNotif)
+
+    def _GetUpcommingEvents(self):
+        upcomingEvents = []
+        dateNow = datetime.datetime.utcnow()        
+        for i in range(0, len(self.PageData)):
+            eventDate = self.PageData[i]['start_date']
+            eventDateTime = parser.parse(eventDate)
+            if dateNow.date() + datetime.timedelta(days=11) >= eventDateTime.date():
+                upcomingEvents.append(self.PageData[i])        
+        return upcomingEvents
+            
+    def BuildPageNotification(self):
+        events = self._GetUpcommingEvents()
+        for i in range(0, len(events)):
+            self.UpcomingEvents.append(events[i])
+        
+
 class CalendarRequester():
     def __init__(self):
         self.CalendarApi = self.InitializeApi()
