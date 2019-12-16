@@ -23,12 +23,9 @@ def main():
         return
 
     pageBuilder = HtmlBuilder()
-
-    websocketIp = mirrorConfig["websockets"]["ip"]
-    websocketPort = mirrorConfig["websockets"]["port"]
-
-    # wsServer = WebSocketServer(websocketIp, websocketPort)
-    # if StartWebsocketThread(wsServer) == False:
+    
+    # wsServer = StartWebsocketServer(mirrorConfig)
+    # if wsServer == None:
     #     print("[!] Unable to start the websocket server! ")
     #     return
 
@@ -60,8 +57,15 @@ def main():
     #     SendMirrorPage(wsServer, markup)
     #     time.sleep(10)
 
-# Sends data to the smart mirror over websockets
+
 def SendMirrorPage(websocketServer, data):
+    """[Sends the HTML markup as a mirror page to all clients]
+    
+    Arguments:
+
+        websocketServer {[WebsocketServer]} -- [Websocket server with the clients]
+        data {[str]} -- [HTML markup to be send to the mirror]
+    """            
     pageData = {
         "type": "mirror_page",
         "data": data
@@ -69,7 +73,6 @@ def SendMirrorPage(websocketServer, data):
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
     websocketServer.SendMessage(b64data)
 
-# Sends the notification text to websockets
 def SendMirrorNotification(websocketServer, data):
     pageData = {
         "type": "mirror_notification",
@@ -78,18 +81,39 @@ def SendMirrorNotification(websocketServer, data):
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
     websocketServer.SendMessage(b64data)
 
-# Starts the websocket server thread
-def StartWebsocketThread(websocketServer):
-    websocketThread = threading.Thread(target=websocketServer.StartServer)
+def StartWebsocketServer(mirrorConfig):
+    """[Starts the websocket server]
+    
+    Arguments:
+
+        mirrorConfig {[dict]} -- [Configuration read by ReadConfig()]
+    
+    Returns:
+
+        [WebsocketServer] -- [Returns a websocket server instance if the server was succesfully started, else it returns none]
+    """    
+    serverIp = mirrorConfig["websockets"]["ip"]
+    serverPort = mirrorConfig["websockets"]["port"]
+    wsServer = WebSocketServer(serverIp, serverPort)
+    websocketThread = threading.Thread(target=wsServer.StartServer)
     websocketThread.daemon = True
     try:
         websocketThread.start()
-        return True
-    except BaseException:
-        return False
+        return wsServer
+    except Exception:
+        return None
 
-# Starts the webserver thread
 def StartWebserver(mirrorConfig):
+    """[Starts the flask webserver in a seperate thread]
+    
+    Arguments:
+
+        mirrorConfig {[dict]} -- [Configuration read by ReadConfig()]
+    
+    Returns:
+
+        [bool] -- [True if succesfully started]
+    """    
     serverIp = mirrorConfig["webserver"]["ip"]
     serverPort = mirrorConfig["webserver"]["port"]
     wServer = Webserver(serverIp, serverPort)
@@ -101,20 +125,34 @@ def StartWebserver(mirrorConfig):
     except BaseException:
         return False
 
-# Starts the pywebview
 def StartWebview(config):
+    """[Starts the pywebview]
+    
+    Arguments:
+
+        config {[dict]} -- [Configuration read by ReadConfig()]
+    """        
+    
     serverIp = config["webserver"]["ip"]
     serverPort = config["webserver"]["port"]
     serverUrl = f"http://{serverIp}:{serverPort}/mirror"
-    url = serverUrl
-
+    url = serverUrl   
     webview.create_window("SmartMirror", url=url)
     webviewThread = threading.Thread(target=webview.start, name="MainThread")
     webviewThread.daemon = True
     webviewThread.start()
 
-# Reads the config.json from the file
 def ReadConfig(path="./config.json"):
+    """Reads the configuration for the mirror
+    
+    Keyword Arguments:
+        path {str} -- [path to the config file] (default: {"./config.json"})
+    
+    Returns:
+
+        dict -- Configuration in JSON format
+
+    """        
     if __PLATFORM == "win32":
         dir_path = os.path.dirname(
             os.path.realpath(__file__)) + r"\config.json"
