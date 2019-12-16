@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class MirrorPage(ABC):
+class MirrorModule(ABC):
 
     @abstractmethod
     # Your page constructor should accept neccecary information

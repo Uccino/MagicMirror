@@ -1,8 +1,8 @@
-from Modules.MirrorPage import MirrorPage
+from Modules.MirrorModule import MirrorModule
 import requests
 
 
-class NewsPage(MirrorPage):
+class NewsModule(MirrorModule):
 
     def __init__(self, mirrorConfig, htmlBuilder):
 

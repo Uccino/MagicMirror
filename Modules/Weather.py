@@ -1,10 +1,10 @@
 from datetime import datetime
-from Modules.MirrorPage import MirrorPage
+from Modules.MirrorModule import MirrorModule
 from enum import Enum
 import requests
 
 
-class WeatherPage(MirrorPage):
+class WeatherModule(MirrorModule):
 
     class Page(Enum):
         Hourly = 0

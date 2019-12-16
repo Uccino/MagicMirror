@@ -1,5 +1,5 @@
 from Core.HtmlBuilder import HtmlBuilder
-from Core.PageManager import PageManager
+from Core.ModuleManager import ModuleManager
 from Core.Webserver import Webserver
 from Core.Websockets import WebSocketServer
 from Core.InputManager import InputGetter
@@ -37,17 +37,17 @@ def main():
 
     # All the pages we're going to use
     pages = [
-        Calendar.CalendarPage(mirrorConfig, pageBuilder),
-        Weather.WeatherPage(mirrorConfig, pageBuilder),
-        News.NewsPage(mirrorConfig, pageBuilder)
+        Calendar.CalendarModule(mirrorConfig, pageBuilder),
+        Weather.WeatherModule(mirrorConfig, pageBuilder),
+        News.NewsModule(mirrorConfig, pageBuilder)
     ]
 
-    pageManager = PageManager(pages)
+    moduleManager = ModuleManager(pages)
 
-    pageManager.UpdatePageData()
-    pageManager.UpdatePageNotifications()
+    moduleManager.UpdatePageData()
+    moduleManager.UpdatePageNotifications()
 
-    pageManager.GetNotifications()
+    moduleManager.GetNotifications()
 
     # dataUpdateThread = threading.Thread(target=pageManager.UpdatePageData, daemon=True)
     # dataUpdateThread.start()

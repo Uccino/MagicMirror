@@ -1,4 +1,4 @@
-from Modules.MirrorPage import MirrorPage
+from Modules.MirrorModule import MirrorModule
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -7,13 +7,12 @@ import datetime
 import pickle
 import os.path
 
-
-class CalendarPage(MirrorPage):
+class CalendarModule(MirrorModule):
     def __init__(self, mirrorConfig, pageBuilder):
         self.ApiSource = CalendarRequester()
         self.PageBuilder = pageBuilder
         self.PageMarkup = None
-
+    
     def ZoomIn(self):
         pass
 
@@ -22,21 +21,19 @@ class CalendarPage(MirrorPage):
 
     def BuildPageMarkup(self):
         pageData = self.GetPageData()
-        self.PageMarkup = self.PageBuilder.BuildTemplate(
-            "calendar_page.html", pageData)
+        self.PageMarkup = self.PageBuilder.BuildTemplate("calendar_page.html", pageData)
 
     def GetPageMarkup(self):
         return self.PageMarkup
 
     def GetPageData(self):
         return self.ApiSource.GetEvents(10)
-
+    
     def BuildPageNotifications(self):
         pass
-
+    
     def GetPageNotifications(self):
         pass
-
 
 class CalendarRequester():
     def __init__(self):
@@ -44,14 +41,14 @@ class CalendarRequester():
 
     def InitializeApi(self):
         """[Initializes the google calendar API]
-
+        
         Raises:
             Exception: [Raises if the config.json wasn't found]
-
+        
         Returns:
 
             [Resource] -- [Google calendar API]
-        """
+        """        
         SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
         creds = None
 
@@ -62,7 +59,7 @@ class CalendarRequester():
 
         if not os.path.exists("./config.json"):
             raise Exception("Unable to find config.json")
-
+        
         # If the credentials are not valid, ask for new ones
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
@@ -73,25 +70,25 @@ class CalendarRequester():
                     SCOPES
                 )
                 creds = flow.run_local_server(port=0)
-            with open('./token.pickle', 'wb') as token:
-                pickle.dump(creds, token)
+            with open('./token.pickle','wb') as token:
+                pickle.dump(creds, token)       
         service = build('calendar', 'v3', credentials=creds)
         return service
 
     def GetEvents(self, amount):
         """Gets the next x events
-
+        
         Arguments:
             amount int -- amount of events to return
-
+        
         Returns:
             Dictionary -- dictionary of events
-        """
-        now = datetime.datetime.utcnow().isoformat() + 'Z'  # Get UTC time
+        """        
+        now = datetime.datetime.utcnow().isoformat() + 'Z' # Get UTC time
         events_results = self.CalendarApi.events().list(
-            calendarId='primary',
+            calendarId='primary', 
             timeMin=now,
-            maxResults=amount,
+            maxResults=amount, 
             singleEvents=True,
             orderBy='startTime'
         ).execute()
@@ -100,39 +97,39 @@ class CalendarRequester():
             return None
         else:
             return self._ParseEventData(events)
-
+    
     def _ParseEventData(self, data):
         """Parses the events for their summary and start_date
-
+        
         Arguments:
             data dictionary -- dictionary which contains events
-
+        
         Returns:
             [type] -- [description]
-        """
+        """        
         events = []
         for i in range(0, len(data)):
             eventStart = data[i]["start"]
             if "dateTime" in eventStart:
-                start = self._GetDateTime(data[i]["start"]["dateTime"])
+                start = self._GetDateTime(data[i]["start"]["dateTime"])               
             else:
                 start = data[i]["start"]["date"]
             event = {
-                "summary": data[i]["summary"],
-                "start_date": start
-            }
+                    "summary": data[i]["summary"],
+                    "start_date": start
+                }
             events.append(event)
         return events
-
+    
     def _GetDateTime(self, dateFormat):
         """Formats the datetime
-
+        
         Arguments:
             dateFormat string -- string which contains a datetime
-
+        
         Returns:
             str -- String formatted datetime
-        """
+        """        
         dateTimeObject = parser.parse(dateFormat)
         dateTimeString = dateTimeObject.strftime('%Y-%m-%d, %H:%M')
         return dateTimeString

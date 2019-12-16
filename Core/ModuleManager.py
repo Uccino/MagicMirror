@@ -3,7 +3,7 @@ import json
 import time
 
 
-class PageManager():
+class ModuleManager():
 
     def __init__(self, pages):
         """Class which provides functions to manage the modules their position and data
@@ -79,17 +79,18 @@ class PageManager():
         """Updates all the notifications in the mirror pages
         """
         for i in range(0, len(self.Pages)):
-            self.Pages[i].BuildPageNotification()
+            self.Pages[i].BuildPageNotifications()
 
     def GetNotifications(self):
         """Gets all the notifications from the loaded pages
 
         Returns:
-            [String array] -- [HTML markup of the notifications]
+
+            [str list] -- [HTML markup of the notifications]
         """
         notifications = []
         for i in range(0, len(self.Pages)):
-            page_notifications = self.Pages[i].GetNotifications()
+            page_notifications = self.Pages[i].GetPageNotifications()
             notifications.append(page_notifications)
 
         return notifications
