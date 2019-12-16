@@ -2,7 +2,8 @@ from Core.HtmlBuilder import HtmlBuilder
 from Core.ModuleManager import ModuleManager
 from Core.Webserver import Webserver
 from Core.Websockets import WebSocketServer
-from Core.InputManager import InputGetter
+from Core.InputHandler import InputHandler
+from Core.MirrorManager import MirrorManager
 from Modules import News, Weather, Calendar
 
 import os
@@ -14,7 +15,6 @@ import time
 import base64
 
 __PLATFORM = sys.platform
-
 
 def main():
     mirrorConfig = ReadConfig()
@@ -43,41 +43,14 @@ def main():
     ]
 
     moduleManager = ModuleManager(pages)
+    mirrorManager = MirrorManager(wsServer, moduleManager)
+    mirrorManager.StartUpdatingData()
 
-    moduleManager.UpdatePageData()
-    moduleManager.UpdatePageNotifications()
+    inputHandler = InputHandler(moduleManager, mirrorManager)
+    inputThread = threading.Thread(target=inputHandler.GetGestureInput, daemon=True)
+    inputThread.start()
+    
 
-    dataUpdateThread = threading.Thread(target=moduleManager.UpdatePageData, daemon=True)
-    dataUpdateThread.start()
-
-    while 1:
-        markup = moduleManager.GetPageMarkup()
-        SendMirrorPage(wsServer, markup)
-        time.sleep(10)
-
-
-def SendMirrorPage(websocketServer, data):
-    """[Sends the HTML markup as a mirror page to all clients]
-
-    Arguments:
-
-        websocketServer {[WebsocketServer]} -- [Websocket server with the clients]
-        data {[str]} -- [HTML markup to be send to the mirror]
-    """
-    pageData = {
-        "type": "mirror_page",
-        "data": data
-    }
-    b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
-    websocketServer.SendMessage(b64data)
-
-def SendMirrorNotification(websocketServer, data):
-    pageData = {
-        "type": "mirror_notification",
-        "data": data
-    }
-    b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
-    websocketServer.SendMessage(b64data)
 
 
 def StartWebsocketServer(mirrorConfig):
