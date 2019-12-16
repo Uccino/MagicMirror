@@ -3,15 +3,18 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from dateutil import parser
+import os.path
 import datetime
 import pickle
-import os.path
+
 
 class CalendarModule(MirrorModule):
     def __init__(self, mirrorConfig, pageBuilder):
         self.ApiSource = CalendarRequester()
         self.PageBuilder = pageBuilder
         self.PageMarkup = None
+        self.PageData = None
+        self.PageNotifications = []
     
     def ZoomIn(self):
         pass
@@ -27,13 +30,46 @@ class CalendarModule(MirrorModule):
         return self.PageMarkup
 
     def GetPageData(self):
-        return self.ApiSource.GetEvents(10)
+        self.PageData = self.ApiSource.GetEvents(10)
+        return self.PageData
     
     def BuildPageNotifications(self):
-        pass
-    
+        self.PageNotifications = []
+        upcommingEvents = self._GetUpcommingEvents()
+        for i in range(0, len(upcommingEvents)):
+            event = upcommingEvents[i]            
+            eventDate = parser.parse(event["start_date"]).date()
+            nowDate = datetime.datetime.now().date()
+            timeDelta = eventDate - nowDate
+
+            eventSummary = event["summary"]
+
+            event_notification = f"{eventSummary} is in {timeDelta.days} days!"
+            self.PageNotifications.append(event_notification)
+        
     def GetPageNotifications(self):
-        pass
+        notifications = []
+        for i in range(0, len(self.PageNotifications)):
+            notification = self.PageNotifications[i]
+            notifications.append(f"<p> {notification} </p>")
+        return notifications
+    
+    def _GetUpcommingEvents(self):
+        """Parses the current events to check if there are any within 11 days
+        
+        Returns:
+
+            [list] -- [List of upcomming events]
+
+        """        
+        upcomingEvents = []
+        dateNow = datetime.datetime.utcnow()        
+        for i in range(0, len(self.PageData)):
+            eventDate = self.PageData[i]['start_date']
+            eventDateTime = parser.parse(eventDate)
+            if dateNow.date() + datetime.timedelta(days=11) >= eventDateTime.date():
+                upcomingEvents.append(self.PageData[i])        
+        return upcomingEvents
 
 class CalendarRequester():
     def __init__(self):

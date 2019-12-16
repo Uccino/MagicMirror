@@ -24,16 +24,16 @@ def main():
 
     pageBuilder = HtmlBuilder()
 
-    # wsServer = StartWebsocketServer(mirrorConfig)
-    # if wsServer == None:
-    #     print("[!] Unable to start the websocket server! ")
-    #     return
+    wsServer = StartWebsocketServer(mirrorConfig)
+    if wsServer == None:
+        print("[!] Unable to start the websocket server! ")
+        return
 
-    # if StartWebserver(mirrorConfig) == False:
-    #     print("[!] Unable to start the webserver! ")
-    #     return
+    if StartWebserver(mirrorConfig) == False:
+        print("[!] Unable to start the webserver! ")
+        return
 
-    # StartWebview(mirrorConfig)
+    StartWebview(mirrorConfig)
 
     # All the pages we're going to use
     pages = [
@@ -47,15 +47,13 @@ def main():
     moduleManager.UpdatePageData()
     moduleManager.UpdatePageNotifications()
 
-    moduleManager.GetNotifications()
+    dataUpdateThread = threading.Thread(target=moduleManager.UpdatePageData, daemon=True)
+    dataUpdateThread.start()
 
-    # dataUpdateThread = threading.Thread(target=pageManager.UpdatePageData, daemon=True)
-    # dataUpdateThread.start()
-
-    # while 1:
-    #     markup = pageManager.GetPageMarkup()
-    #     SendMirrorPage(wsServer, markup)
-    #     time.sleep(10)
+    while 1:
+        markup = moduleManager.GetPageMarkup()
+        SendMirrorPage(wsServer, markup)
+        time.sleep(10)
 
 
 def SendMirrorPage(websocketServer, data):
@@ -72,7 +70,6 @@ def SendMirrorPage(websocketServer, data):
     }
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
     websocketServer.SendMessage(b64data)
-
 
 def SendMirrorNotification(websocketServer, data):
     pageData = {
@@ -105,7 +102,6 @@ def StartWebsocketServer(mirrorConfig):
     except Exception:
         return None
 
-
 def StartWebserver(mirrorConfig):
     """[Starts the flask webserver in a seperate thread]
 
@@ -128,7 +124,6 @@ def StartWebserver(mirrorConfig):
     except BaseException:
         return False
 
-
 def StartWebview(config):
     """[Starts the pywebview]
 
@@ -145,7 +140,6 @@ def StartWebview(config):
     webviewThread = threading.Thread(target=webview.start, name="MainThread")
     webviewThread.daemon = True
     webviewThread.start()
-
 
 def ReadConfig(path="./config.json"):
     """Reads the configuration for the mirror
@@ -174,7 +168,6 @@ def ReadConfig(path="./config.json"):
         with open(dir_path, 'r') as jsonFile:
             configData = json.load(jsonFile)
             return configData
-
 
 if __name__ == "__main__":
     main()
