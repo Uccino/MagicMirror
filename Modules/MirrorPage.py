@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 
+
 class MirrorPage(ABC):
-    
-    @abstractmethod    
+
+    @abstractmethod
     # Your page constructor should accept neccecary information
-    # for the page requester to run properly. 
+    # for the page requester to run properly.
     # It should also accept a htmlbuilder.
     def __init__(self):
         pass

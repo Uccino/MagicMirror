@@ -3,8 +3,9 @@ from Modules.MirrorPage import MirrorPage
 from enum import Enum
 import requests
 
+
 class WeatherPage(MirrorPage):
-    
+
     class Page(Enum):
         Hourly = 0
         Daily = 1
@@ -18,7 +19,12 @@ class WeatherPage(MirrorPage):
         self.LocLatitude = mirrorConfig["weather"]["location"]["latitude"]
         self.LocLongitude = mirrorConfig["weather"]["location"]["longitude"]
 
-        self.ApiSource = DarkSkyWeather(self.ApiKey, self.Language,self.LocLatitude, self.LocLongitude, self.LocName)
+        self.ApiSource = DarkSkyWeather(
+            self.ApiKey,
+            self.Language,
+            self.LocLatitude,
+            self.LocLongitude,
+            self.LocName)
         self.CurrentPage = self.Page.Weekly
         self.PageBuilder = htmlBuilder
 
@@ -28,20 +34,20 @@ class WeatherPage(MirrorPage):
 
     def ZoomIn(self):
         if self.CurrentPage == self.Page.Daily:
-            self.CurrentPage = self.Page.Hourly            
+            self.CurrentPage = self.Page.Hourly
         elif self.CurrentPage == self.Page.Weekly:
-            self.CurrentPage = self.Page.Daily           
+            self.CurrentPage = self.Page.Daily
         elif self.CurrentPage == self.Page.Hourly:
-            pass  
-        
+            pass
+
     def ZoomOut(self):
         if self.CurrentPage == self.Page.Daily:
-            self.CurrentPage = self.Page.Weekly            
+            self.CurrentPage = self.Page.Weekly
         elif self.CurrentPage == self.Page.Weekly:
             pass
-        elif self.CurrentPage ==self. Page.Hourly:
+        elif self.CurrentPage == self. Page.Hourly:
             self.CurrentPage = self.Page.Daily
-    
+
     def GetPageMarkup(self):
         if self.CurrentPage == self.Page.Daily:
             return self.DailyPageMarkup
@@ -52,20 +58,30 @@ class WeatherPage(MirrorPage):
 
     def GetPageData(self):
         weatherInfo = self.ApiSource.GetWeatherInfo()
-        return weatherInfo        
+        return weatherInfo
 
-    def BuildPageMarkup(self):        
+    def BuildPageMarkup(self):
         weatherData = self.GetPageData()
 
         hourlyData = self.ApiSource.GetHourlyWeatherForecast(weatherData)
         dailyData = self.ApiSource.GetCurrentWeatherForecast(weatherData)
         weeklyData = self.ApiSource.GetDailyForecast(weatherData)
 
-        self.HourlyPageMarkup = self.PageBuilder.BuildTemplate("weather_hourly.html", hourlyData)
-        self.DailyPageMarkup =  self.PageBuilder.BuildTemplate("weather_daily.html", dailyData)
-        self.WeeklyPageMarkup =  self.PageBuilder.BuildTemplate("weather_weekly.html", weeklyData)
+        self.HourlyPageMarkup = self.PageBuilder.BuildTemplate(
+            "weather_hourly.html", hourlyData)
+        self.DailyPageMarkup = self.PageBuilder.BuildTemplate(
+            "weather_daily.html", dailyData)
+        self.WeeklyPageMarkup = self.PageBuilder.BuildTemplate(
+            "weather_weekly.html", weeklyData)
 
-class DarkSkyWeather():    
+    def BuildPageNotifications(self):
+        pass
+
+    def GetPageNotifications(self):
+        pass
+
+
+class DarkSkyWeather():
 
     # Constructor
     def __init__(self, api_key, language, latitude, longitude, locationName):
@@ -94,7 +110,7 @@ class DarkSkyWeather():
 
     # Parses the weather forecast to get the current weather
     def GetCurrentWeatherForecast(self, weatherInfo):
-        currentForecast = weatherInfo["currently"]        
+        currentForecast = weatherInfo["currently"]
         forecastDict = {
             "location": self.Name,
             "summary": currentForecast["summary"],
@@ -114,27 +130,28 @@ class DarkSkyWeather():
         for i in range(0, 13):
             forecastHour = self._GetHourFromUnixDate(hourlyForecast[i]["time"])
             forecast = {
-                    "time": forecastHour,
-                    "icon": self._GetWeatherIcon(hourlyForecast[i]["icon"]),
-                    "temperature": hourlyForecast[i]["temperature"]
-                }
-        
+                "time": forecastHour,
+                "icon": self._GetWeatherIcon(hourlyForecast[i]["icon"]),
+                "temperature": hourlyForecast[i]["temperature"]
+            }
+
             forecastList.append(forecast)
         forecast = {
             "location": self.Name,
-            "data":forecastList
-            }
+            "data": forecastList
+        }
         return forecast
 
     # Parses the weather forecast to get the daily forecast
     def GetDailyForecast(self, weatherInfo):
         dailyForecast = weatherInfo["daily"]["data"]
         forecastList = []
-        for i in range(0,7):
-            forecastTimeStamp = self._GetDateFromUnixStamp(dailyForecast[i]["time"])
+        for i in range(0, 7):
+            forecastTimeStamp = self._GetDateFromUnixStamp(
+                dailyForecast[i]["time"])
             weekString = self._GetDayNameFromDate(forecastTimeStamp)
             forecast = {
-                "day":weekString,
+                "day": weekString,
                 "minTemp": dailyForecast[i]["temperatureMin"],
                 "maxTemp": dailyForecast[i]["temperatureMax"],
                 "icon": self._GetWeatherIcon(dailyForecast[i]["icon"])
@@ -149,9 +166,9 @@ class DarkSkyWeather():
     # Converts the unix timestamp to human readable datetime
     def _GetHourFromUnixDate(self, unixTime):
         timestamp = datetime.fromtimestamp(unixTime)
-        hour = timestamp.hour 
+        hour = timestamp.hour
         return hour
-    
+
     # Converts the unix timestamp to a day ( 1 - 31 )
     def _GetDateFromUnixStamp(self, unixTime):
         timestamp = datetime.fromtimestamp(unixTime)
@@ -159,7 +176,7 @@ class DarkSkyWeather():
 
     # Returns the weekday as a string given a timestamp
     def _GetDayNameFromDate(self, timestamp):
-        if(type(timestamp) == datetime):
+        if(isinstance(timestamp, datetime)):
             return timestamp.strftime("%a")
         else:
             raise ValueError("Timestamp given was not in the correct format")
@@ -182,7 +199,7 @@ class DarkSkyWeather():
             return "wi-fog"
         elif condition == "cloudy":
             return "wi-cloudy"
-        elif condition =="partly-cloudy-day":
+        elif condition == "partly-cloudy-day":
             return "wi-day-cloudy"
         elif condition == "partly-cloudy-night":
             return "wi-night-alt-cloudy"

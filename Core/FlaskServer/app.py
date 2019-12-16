@@ -1,21 +1,14 @@
-from flask              import (
-    Flask, 
-    request, 
-    render_template, 
-    flash, redirect, 
-    jsonify, 
-    session
-)
 
-from functools          import wraps
-from flask_sqlalchemy   import SQLAlchemy
+from flask import Flask, request, render_template, flash, redirect, jsonify, session
+from functools import wraps
+from flask_sqlalchemy import SQLAlchemy
 import logging
 import sys
 
 # Flask setup
 app = Flask(
     __name__,
-    template_folder='./templates',    
+    template_folder='./templates',
     static_folder='./static'
 )
 
@@ -28,22 +21,30 @@ db = SQLAlchemy(app)
 
 # We import the models **AFTER** initializing the database
 import flask_models
-
 # Starts the server
-def StartServer( ip, port, debugValue = False):
+
+
+def StartServer(ip, port, debugValue=False):
     # Set the logging value according to the debug settings
     log = logging.getLogger('werkzeug')
 
-    if debugValue == True:
+    if debugValue:
         log.setLevel(logging.DEBUG)
-    else:        
+    else:
         logging.getLogger('werkzeug').disabled = True
         logging.disable = True
         log.setLevel(logging.FATAL)
     app.run(debug=debugValue, host=ip, port=port)
 
-# Decorater for being logged in 
 def login_required(f):
+    """[Decorator to check if an user has been logged in]
+    
+    Arguments:
+        f {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """    
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'logged_in' in session:
@@ -67,12 +68,13 @@ def login():
     if request.method == "GET":
         if 'logged_in' in session:
             return redirect('/')
-        return render_template('login.html')      
+        return render_template('login.html')
     else:
         username = request.form["username"]
         password = request.form["password"]
 
-        user = flask_models.User.query.filter_by(username=username, password=password).first()
+        user = flask_models.User.query.filter_by(
+            username=username, password=password).first()
         if user is not None:
             session["logged_in"] = True
             return redirect('/')
@@ -92,22 +94,25 @@ def sendnews():
     return redirect('/')
 
 # Route for getting the latest news
-@app.route('/news/getnews',methods=["GET"])
+@app.route('/news/getnews', methods=["GET"])
 def getnews():
-    all_posts = flask_models.Post.query.limit(5).all()    
-    return jsonify(posts = [
+    all_posts = flask_models.Post.query.limit(5).all()
+    return jsonify(posts=[
         i.serialize() for i in all_posts
     ])
+
 
 @app.route("/mirror")
 def mirror():
     return render_template("mirror.html")
 
+
 @app.route("/test")
 def test():
     return render_template("test.html")
 
-# This only gets used when we start the webserver.py via shell 
+
+# This only gets used when we start the webserver.py via shell
 if __name__ == '__main__':
     print(f"{sys.argv[1]}, {sys.argv[2]}")
-    StartServer( sys.argv[1], sys.argv[2],True)
+    StartServer(sys.argv[1], sys.argv[2], True)

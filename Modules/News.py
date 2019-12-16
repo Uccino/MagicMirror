@@ -13,27 +13,35 @@ class NewsPage(MirrorPage):
 
     def ZoomIn(self):
         pass
-    
+
     def ZoomOut(self):
         pass
-    
-    def GetPageData(self):        
+
+    def GetPageData(self):
         return self.ApiSource.GetNews()
 
     def BuildPageMarkup(self):
         pageData = self.GetPageData()
-        self.PageMarkup =  self.PageBuilder.BuildTemplate("news_page.html", pageData)
-    
+        self.PageMarkup = self.PageBuilder.BuildTemplate(
+            "news_page.html", pageData)
+
     def GetPageMarkup(self):
         return self.PageMarkup
 
+    def BuildPageNotifications(self):
+        pass
+
+    def GetPageNotifications(self):
+        pass
+
+
 class NewsRequester():
-        
+
     def __init__(self, url):
         self.Url = url
 
     # Gets the latest news from the webserver
-    def GetNews(self):        
+    def GetNews(self):
         try:
             response = requests.get(self.Url)
             if response.status_code == 200:
@@ -41,5 +49,5 @@ class NewsRequester():
                 return responseData
             else:
                 return None
-        except Exception as generalException:        
+        except Exception as generalException:
             return None

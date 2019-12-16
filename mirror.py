@@ -23,7 +23,7 @@ def main():
         return
 
     pageBuilder = HtmlBuilder()
-    
+
     # wsServer = StartWebsocketServer(mirrorConfig)
     # if wsServer == None:
     #     print("[!] Unable to start the websocket server! ")
@@ -60,18 +60,19 @@ def main():
 
 def SendMirrorPage(websocketServer, data):
     """[Sends the HTML markup as a mirror page to all clients]
-    
+
     Arguments:
 
         websocketServer {[WebsocketServer]} -- [Websocket server with the clients]
         data {[str]} -- [HTML markup to be send to the mirror]
-    """            
+    """
     pageData = {
         "type": "mirror_page",
         "data": data
     }
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
     websocketServer.SendMessage(b64data)
+
 
 def SendMirrorNotification(websocketServer, data):
     pageData = {
@@ -81,17 +82,18 @@ def SendMirrorNotification(websocketServer, data):
     b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
     websocketServer.SendMessage(b64data)
 
+
 def StartWebsocketServer(mirrorConfig):
     """[Starts the websocket server]
-    
+
     Arguments:
 
         mirrorConfig {[dict]} -- [Configuration read by ReadConfig()]
-    
+
     Returns:
 
         [WebsocketServer] -- [Returns a websocket server instance if the server was succesfully started, else it returns none]
-    """    
+    """
     serverIp = mirrorConfig["websockets"]["ip"]
     serverPort = mirrorConfig["websockets"]["port"]
     wsServer = WebSocketServer(serverIp, serverPort)
@@ -103,17 +105,18 @@ def StartWebsocketServer(mirrorConfig):
     except Exception:
         return None
 
+
 def StartWebserver(mirrorConfig):
     """[Starts the flask webserver in a seperate thread]
-    
+
     Arguments:
 
         mirrorConfig {[dict]} -- [Configuration read by ReadConfig()]
-    
+
     Returns:
 
         [bool] -- [True if succesfully started]
-    """    
+    """
     serverIp = mirrorConfig["webserver"]["ip"]
     serverPort = mirrorConfig["webserver"]["port"]
     wServer = Webserver(serverIp, serverPort)
@@ -125,34 +128,36 @@ def StartWebserver(mirrorConfig):
     except BaseException:
         return False
 
+
 def StartWebview(config):
     """[Starts the pywebview]
-    
+
     Arguments:
 
         config {[dict]} -- [Configuration read by ReadConfig()]
-    """        
-    
+    """
+
     serverIp = config["webserver"]["ip"]
     serverPort = config["webserver"]["port"]
     serverUrl = f"http://{serverIp}:{serverPort}/mirror"
-    url = serverUrl   
+    url = serverUrl
     webview.create_window("SmartMirror", url=url)
     webviewThread = threading.Thread(target=webview.start, name="MainThread")
     webviewThread.daemon = True
     webviewThread.start()
 
+
 def ReadConfig(path="./config.json"):
     """Reads the configuration for the mirror
-    
+
     Keyword Arguments:
         path {str} -- [path to the config file] (default: {"./config.json"})
-    
+
     Returns:
 
         dict -- Configuration in JSON format
 
-    """        
+    """
     if __PLATFORM == "win32":
         dir_path = os.path.dirname(
             os.path.realpath(__file__)) + r"\config.json"
