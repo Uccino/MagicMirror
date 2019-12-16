@@ -2,14 +2,19 @@ import subprocess
 import sys
 
 class Webserver():
-    # Constructor
+    
     def __init__(self, host, port):
         self.Host = host
         self.Port = port
         self.platform = sys.platform
-
-    # Starts the webserver
+        
     def StartServer(self):
+        """Starts the flask webserver
+        
+        Returns:
+            [Bool] -- [True if server was started]
+        """     
+
         print("[x] Starting the webserver server.")
         # If we're running on windows
         if self.platform == "win32":

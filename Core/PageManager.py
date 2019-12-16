@@ -2,9 +2,13 @@ import base64, json
 import time
 
 class PageManager():
-
-    # Constructor
+    
     def __init__(self, pages):
+        """Class which provides functions to manage the modules their position and data
+        
+        Arguments:
+            pages {MirrorPages array} -- array with mirror pages 
+        """        
         self.PageCount = len(pages)
         self.PageIndex = 0 
 
@@ -16,47 +20,71 @@ class PageManager():
         
         self.CurrentPage = self.Pages[self.PageIndex]
         
-
-    # Function gets called when the zoom in gesture is made
     def ZoomIn(self):
+        """ Switches info on the current page. Should be bound to a zoom in gesture.
+            Check the Modules/Weather.py for more info
+
+            
+        Returns:
+        [None]
+        """        
         self.CurrentPage.ZoomIn()
-
-    # Function gets called when the zoom out gesture is made
+        
     def ZoomOut(self):
-        self.CurrentPage.ZoomOut()
+        """ Switches info on the current page. Should be bound to a zoom out gesture.
+            Check the Modules/Weather.py for more info
 
-    # Function gets called when we swipe right
-    def NextPage(self):        
+            
+        Returns:
+        [None]
+        """
+        self.CurrentPage.ZoomOut()
+            
+    def NextPage(self):
+        """Moves to the next page in the array
+        """        
         if self.PageIndex + 1 == self.PageCount:
             pass
         else:
             self.PageIndex += 1
             self.CurrentPage = self.Pages[self.PageIndex]
-
-    # Function gets called when we swipe left
+    
     def PreviousPage(self):
+        """Moves to the previous page in the array
+        """        
         if self.PageIndex - 1 == -1:
             pass
         else:
             self.PageIndex -= 1
             self.CurrentPage = self.Pages[self.PageIndex]
-
-    # Returns the HTML of the currently displayed page
+    
     def GetPageMarkup(self):
+        """Gets the current mirror page's HTML markup
+        
+        Returns:
+            String -- HTML markup of the page
+        """        
         mirrorPage = self.CurrentPage
         return mirrorPage.GetPageMarkup()
-    
-    # Gets all the data from each page
+        
     def UpdatePageData(self):
+        """Updates all the data in the mirror pages
+        """        
         for i in range(0, len(self.Pages)):
             self.Pages[i].BuildPageMarkup()
-    
-    # Updates the notifications from each page
+        
     def UpdatePageNotifications(self):
+        """Updates all the notifications in the mirror pages
+        """        
         for i in range(0, len(self.Pages)):
             self.Pages[i].BuildPageNotification()
     
     def GetNotifications(self):
+        """Gets all the notifications from the loaded pages
+        
+        Returns:
+            [String array] -- [HTML markup of the notifications]
+        """        
         notifications = []
         for i in range(0, len(self.Pages)):
             page_notifications = self.Pages[i].GetNotifications()
