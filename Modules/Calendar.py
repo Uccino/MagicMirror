@@ -13,18 +13,18 @@ class CalendarPage(MirrorPage):
         self.PageBuilder = pageBuilder
         self.PageMarkup = None
     
+    def ZoomIn(self):
+        pass
+
+    def ZoomOut(self):
+        pass
+
     def BuildPageMarkup(self):
         pageData = self.GetPageData()
         self.PageMarkup = self.PageBuilder.BuildTemplate("calendar_page.html", pageData)
 
     def GetPageMarkup(self):
         return self.PageMarkup
-
-    def ZoomIn(self):
-        pass
-
-    def ZoomOut(self):
-        pass
 
     def GetPageData(self):
         return self.ApiSource.GetEvents(10)
@@ -34,6 +34,15 @@ class CalendarRequester():
         self.CalendarApi = self.InitializeApi()
 
     def InitializeApi(self):
+        """[Initializes the google calendar API]
+        
+        Raises:
+            Exception: [Raises if the config.json wasn't found]
+        
+        Returns:
+
+            [Resource] -- [Google calendar API]
+        """        
         SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
         creds = None
 
@@ -56,12 +65,19 @@ class CalendarRequester():
                 )
                 creds = flow.run_local_server(port=0)
             with open('./token.pickle','wb') as token:
-                pickle.dump(creds, token)
-        
+                pickle.dump(creds, token)       
         service = build('calendar', 'v3', credentials=creds)
         return service
 
     def GetEvents(self, amount):
+        """Gets the next x events
+        
+        Arguments:
+            amount int -- amount of events to return
+        
+        Returns:
+            Dictionary -- dictionary of events
+        """        
         now = datetime.datetime.utcnow().isoformat() + 'Z' # Get UTC time
         events_results = self.CalendarApi.events().list(
             calendarId='primary', 
@@ -77,6 +93,14 @@ class CalendarRequester():
             return self._ParseEventData(events)
     
     def _ParseEventData(self, data):
+        """Parses the events for their summary and start_date
+        
+        Arguments:
+            data dictionary -- dictionary which contains events
+        
+        Returns:
+            [type] -- [description]
+        """        
         events = []
         for i in range(0, len(data)):
             eventStart = data[i]["start"]
@@ -92,6 +116,14 @@ class CalendarRequester():
         return events
     
     def _GetDateTime(self, dateFormat):
+        """Formats the datetime
+        
+        Arguments:
+            dateFormat string -- string which contains a datetime
+        
+        Returns:
+            str -- String formatted datetime
+        """        
         dateTimeObject = parser.parse(dateFormat)
         dateTimeString = dateTimeObject.strftime('%Y-%m-%d, %H:%M')
         return dateTimeString

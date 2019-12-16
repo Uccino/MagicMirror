@@ -28,3 +28,11 @@ class MirrorPage(ABC):
     @abstractmethod
     def GetPageMarkup(self):
         pass
+
+    @abstractmethod
+    def BuildPageNotifications(self):
+        pass
+
+    @abstractmethod
+    def GetPageNotifications(self):
+        pass

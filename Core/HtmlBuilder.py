@@ -15,7 +15,8 @@ class HtmlBuilder():
         
         Arguments:
             template_name {[string]} -- [Name of the template to be rendered]
-            template_data {[dictionary]} -- [Data to be rendered in the template]
+
+            template_data {[dict]} -- [Data to be rendered in the template]
         
         Returns:
             [type] -- [description]
