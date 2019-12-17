@@ -2,18 +2,18 @@ from websocket_server import WebsocketServer as wsServer
 
 
 class WebSocketServer():
-    def __init__(self, ip, port, updateFunction):
+    def __init__(self, ip, port):
         self.ServerIp = ip
         self.ServerPort = port
         self.Server = wsServer(port, ip)
-        self.SetupServer(updateFunction)
+        self.SetupServer()
 
-    def SetupServer(self, updateFunction):
+    def SetupServer(self):
         """ Sets the websocket_server event handlers
         """
         self.Server.set_fn_client_left(self._ClientLeft)
         self.Server.set_fn_message_received(self._MessageReceived)
-        self.Server.set_fn_new_client(updateFunction)
+        self.Server.set_fn_new_client(self._ClientConnected)
 
     def StartServer(self):
         """Starts the websocket_server forever

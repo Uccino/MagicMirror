@@ -2,7 +2,7 @@ from Core.HtmlBuilder import HtmlBuilder
 from Core.ModuleManager import ModuleManager
 from Core.Webserver import Webserver
 from Core.Websockets import WebSocketServer
-from Core.InputHandler import InputHandler
+# from Core.InputHandler import InputHandler
 from Core.MirrorManager import MirrorManager
 from Modules import News, Weather, Calendar
 
@@ -15,6 +15,7 @@ import time
 import base64
 
 __PLATFORM = sys.platform
+
 
 def main():
     mirrorConfig = ReadConfig()
@@ -32,7 +33,7 @@ def main():
     if StartWebserver(mirrorConfig) == False:
         print("[!] Unable to start the webserver! ")
         return
-    
+
     # All the pages we're going to use
     pages = [
         Calendar.CalendarModule(mirrorConfig, pageBuilder),
@@ -43,20 +44,18 @@ def main():
     moduleManager = ModuleManager(pages)
     mirrorManager = MirrorManager(wsServer, moduleManager)
 
-    inputHandler = InputHandler(moduleManager, mirrorManager)
-    inputThread = threading.Thread(target=inputHandler.GetGestureInput, daemon=True)
-    inputThread.start()
+    # inputHandler = InputHandler(moduleManager, mirrorManager)
+    # inputThread = threading.Thread(target=inputHandler.GetGestureInput, daemon=True)
+    # inputThread.start()
 
-    UpdateMirror()
+    moduleManager.UpdatePages()
+    mirrorManager.UpdateMirrorPage()
+    mirrorManager.StartUpdatingData()
 
     # StartWebview(mirrorConfig)
     while 1:
         pass
-        
-def UpdateMirror(modManager, mirrorManager):
-    moduleManager.UpdatePages()
-    mirrorManager.UpdateMirrorPage()    
-    mirrorManager.StartUpdatingData()
+
 
 def StartWebsocketServer(mirrorConfig):
     """[Starts the websocket server]
@@ -71,7 +70,7 @@ def StartWebsocketServer(mirrorConfig):
     """
     serverIp = mirrorConfig["websockets"]["ip"]
     serverPort = mirrorConfig["websockets"]["port"]
-    wsServer = WebSocketServer(serverIp, serverPort, UpdateMirror)
+    wsServer = WebSocketServer(serverIp, serverPort)
     websocketThread = threading.Thread(target=wsServer.StartServer)
     websocketThread.daemon = True
     try:
@@ -79,6 +78,7 @@ def StartWebsocketServer(mirrorConfig):
         return wsServer
     except Exception:
         return None
+
 
 def StartWebserver(mirrorConfig):
     """[Starts the flask webserver in a seperate thread]
@@ -102,6 +102,7 @@ def StartWebserver(mirrorConfig):
     except BaseException:
         return False
 
+
 def StartWebview(config):
     """[Starts the pywebview]
 
@@ -119,6 +120,7 @@ def StartWebview(config):
     # webviewThread = threading.Thread(target=webview.start, name="MainThread")
     # webviewThread.daemon = True
     # webviewThread.start()
+
 
 def ReadConfig(path="./config.json"):
     """Reads the configuration for the mirror
@@ -147,6 +149,7 @@ def ReadConfig(path="./config.json"):
         with open(dir_path, 'r') as jsonFile:
             configData = json.load(jsonFile)
             return configData
+
 
 if __name__ == "__main__":
     main()

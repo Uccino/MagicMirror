@@ -2,6 +2,7 @@ import base64
 import json
 import threading
 
+
 class MirrorManager():
 
     def __init__(self, websocketServer, moduleManager):
@@ -12,20 +13,21 @@ class MirrorManager():
         self._UpdateModuleData()
         # self._UpdateModuleNotifications()
 
-    def UpdateMirrorPage(self):        
+    def UpdateMirrorPage(self):
         moduleMarkup = self.Modules.GetPageMarkup()
         self.__SendMirrorPage(moduleMarkup)
 
     def _UpdateModuleData(self):
         modManager = self.Modules
         updateThread = threading.Thread(target=modManager.UpdatePageData)
-        updateThread.daemon=True
+        updateThread.daemon = True
         updateThread.start()
 
-    def _UpdateModuleNotifications(self):        
+    def _UpdateModuleNotifications(self):
         modManager = self.Modules
-        updateThread = threading.Thread(target=modManager.UpdatePageNotifications)
-        updateThread.daemon=True
+        updateThread = threading.Thread(
+            target=modManager.UpdatePageNotifications)
+        updateThread.daemon = True
         updateThread.start()
 
     def __SendMirrorPage(self, data):
@@ -45,10 +47,10 @@ class MirrorManager():
 
     def __SendMirrorNotification(self, data):
         """[Sends the HTML markup as notifications to all clients]
-        
+
         Arguments:
             data {[list]} -- [List containing all the notifications as markup]
-        """        
+        """
         pageData = {
             "type": "mirror_notification",
             "data": data

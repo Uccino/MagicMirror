@@ -1,6 +1,7 @@
 from Core import grove_gesture_sensor
 import time
 
+
 class InputHandler():
 
     def __init__(self, moduleManager, mirrorManager):
@@ -12,27 +13,27 @@ class InputHandler():
     def GetGestureInput(self):
         while 1:
             gesture = self.Grove.return_gesture()
-            
-            #Match the gesture           
-            if gesture==self.Grove.RIGHT:
-                
-                self.ModuleManager.NextPage()                
-                self._UpdateMirror()                
-            elif gesture==self.Grove.LEFT:
-                
+
+            # Match the gesture
+            if gesture == self.Grove.RIGHT:
+
+                self.ModuleManager.NextPage()
+                self._UpdateMirror()
+            elif gesture == self.Grove.LEFT:
+
                 self.ModuleManager.PreviousPage()
-                self._UpdateMirror()                
-            elif gesture==self.Grove.UP:
-                
+                self._UpdateMirror()
+            elif gesture == self.Grove.UP:
+
                 self.ModuleManager.ZoomIn()
-                self._UpdateMirror()                
-            elif gesture==self.Grove.DOWN:
-                
+                self._UpdateMirror()
+            elif gesture == self.Grove.DOWN:
+
                 self.ModuleManager.ZoomOut()
-                self._UpdateMirror()                
+                self._UpdateMirror()
             else:
-                pass            
+                pass
             time.sleep(.1)
-    
+
     def _UpdateMirror(self):
         self.MirrorManager.UpdateMirrorPage()

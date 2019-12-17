@@ -2,6 +2,7 @@ import base64
 import json
 import time
 
+
 class ModuleManager():
 
     def __init__(self, pages):
@@ -58,7 +59,7 @@ class ModuleManager():
             for i in range(0, len(self.Pages)):
                 self.Pages[i].BuildPageNotifications()
             time.sleep(180)
-    
+
     def UpdatePages(self):
         for i in range(0, len(self.Pages)):
             self.Pages[i].BuildPageMarkup()

@@ -61,7 +61,7 @@ class WeatherModule(MirrorModule):
         return weatherInfo
 
     def BuildPageMarkup(self):
-        
+
         weatherData = self.GetPageData()
 
         hourlyData = self.ApiSource.GetHourlyWeatherForecast(weatherData)
