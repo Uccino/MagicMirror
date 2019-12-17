@@ -1,4 +1,4 @@
-const wsUrl = "ws://localhost:8000";
+const wsUrl = "ws://192.168.2.13:8000";
 websocket = new WebSocket(wsUrl);
 const getConfigJson = {
     "message": "get_config"

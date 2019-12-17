@@ -10,9 +10,9 @@ class MirrorManager():
 
     def StartUpdatingData(self):
         self._UpdateModuleData()
-        self._UpdateModuleNotifications()
+        # self._UpdateModuleNotifications()
 
-    def UpdateMirrorPage(self):
+    def UpdateMirrorPage(self):        
         moduleMarkup = self.Modules.GetPageMarkup()
         self.__SendMirrorPage(moduleMarkup)
 

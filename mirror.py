@@ -32,9 +32,7 @@ def main():
     if StartWebserver(mirrorConfig) == False:
         print("[!] Unable to start the webserver! ")
         return
-
-    StartWebview(mirrorConfig)
-
+    
     # All the pages we're going to use
     pages = [
         Calendar.CalendarModule(mirrorConfig, pageBuilder),
@@ -44,14 +42,21 @@ def main():
 
     moduleManager = ModuleManager(pages)
     mirrorManager = MirrorManager(wsServer, moduleManager)
-    mirrorManager.StartUpdatingData()
 
     inputHandler = InputHandler(moduleManager, mirrorManager)
     inputThread = threading.Thread(target=inputHandler.GetGestureInput, daemon=True)
     inputThread.start()
-    
 
+    UpdateMirror()
 
+    # StartWebview(mirrorConfig)
+    while 1:
+        pass
+        
+def UpdateMirror(modManager, mirrorManager):
+    moduleManager.UpdatePages()
+    mirrorManager.UpdateMirrorPage()    
+    mirrorManager.StartUpdatingData()
 
 def StartWebsocketServer(mirrorConfig):
     """[Starts the websocket server]
@@ -66,7 +71,7 @@ def StartWebsocketServer(mirrorConfig):
     """
     serverIp = mirrorConfig["websockets"]["ip"]
     serverPort = mirrorConfig["websockets"]["port"]
-    wsServer = WebSocketServer(serverIp, serverPort)
+    wsServer = WebSocketServer(serverIp, serverPort, UpdateMirror)
     websocketThread = threading.Thread(target=wsServer.StartServer)
     websocketThread.daemon = True
     try:
@@ -110,9 +115,10 @@ def StartWebview(config):
     serverUrl = f"http://{serverIp}:{serverPort}/mirror"
     url = serverUrl
     webview.create_window("SmartMirror", url=url)
-    webviewThread = threading.Thread(target=webview.start, name="MainThread")
-    webviewThread.daemon = True
-    webviewThread.start()
+    webview.start()
+    # webviewThread = threading.Thread(target=webview.start, name="MainThread")
+    # webviewThread.daemon = True
+    # webviewThread.start()
 
 def ReadConfig(path="./config.json"):
     """Reads the configuration for the mirror

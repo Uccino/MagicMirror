@@ -1,6 +1,6 @@
 import subprocess
 import sys
-
+import os 
 
 class Webserver():
 
@@ -19,19 +19,23 @@ class Webserver():
         """
 
         print("[x] Starting the webserver server.")
+        
         # If we're running on windows
         if self.platform == "win32":
             try:
                 serverCommand = f"python ./Core/FlaskServer/app.py {self.Host} {self.Port}"
                 subprocess.run(serverCommand)
-            except BaseException:
+            except Exception:
+                print("Help")
                 return False
         # Linux variant
         elif self.platform == "linux":
             try:
-                serverCommand = f"python3 FlaskServer/app.py {self.Host} {self.Port}"
-                subprocess.run(serverCommand)
-            except BaseException:
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+                serverCommand = f"python3 {dir_path}/FlaskServer/app.py {self.Host} {self.Port}"
+                subprocess.call(serverCommand, shell=True)
+            except Exception as e:
+                print(e)
                 return False
 
 

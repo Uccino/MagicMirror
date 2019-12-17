@@ -15,20 +15,23 @@ class InputHandler():
             
             #Match the gesture           
             if gesture==self.Grove.RIGHT:
-                self.ModuleManager.NextPage()
-                self._UpdateMirror()
+                
+                self.ModuleManager.NextPage()                
+                self._UpdateMirror()                
             elif gesture==self.Grove.LEFT:
+                
                 self.ModuleManager.PreviousPage()
-                self._UpdateMirror()
+                self._UpdateMirror()                
             elif gesture==self.Grove.UP:
+                
                 self.ModuleManager.ZoomIn()
-                self._UpdateMirror()
+                self._UpdateMirror()                
             elif gesture==self.Grove.DOWN:
+                
                 self.ModuleManager.ZoomOut()
-                self._UpdateMirror()
+                self._UpdateMirror()                
             else:
-                print("Unused gesture")
-            
+                pass            
             time.sleep(.1)
     
     def _UpdateMirror(self):

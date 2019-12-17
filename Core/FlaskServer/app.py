@@ -56,7 +56,7 @@ def login_required(f):
     return wrap
 
 # Flask app routes are defined here
-@app.route('/news')
+@app.route('/news/')
 @login_required
 def index():
     all_posts = flask_models.Post.query.all()
@@ -79,7 +79,7 @@ def login():
             session["logged_in"] = True
             return redirect('/')
         else:
-            return redirect('/login')
+            return redirect('/news/login')
 
 # Route for creating a new post
 @app.route('/news/sendnews', methods=["POST"])
@@ -91,7 +91,7 @@ def sendnews():
     db.session.add(newPost)
     db.session.commit()
     flash("Post created succesfully!")
-    return redirect('/')
+    return redirect('/news')
 
 # Route for getting the latest news
 @app.route('/news/getnews', methods=["GET"])
@@ -105,11 +105,6 @@ def getnews():
 @app.route("/mirror")
 def mirror():
     return render_template("mirror.html")
-
-
-@app.route("/test")
-def test():
-    return render_template("test.html")
 
 
 # This only gets used when we start the webserver.py via shell

@@ -2,18 +2,18 @@ from websocket_server import WebsocketServer as wsServer
 
 
 class WebSocketServer():
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, updateFunction):
         self.ServerIp = ip
         self.ServerPort = port
         self.Server = wsServer(port, ip)
-        self.SetupServer()
+        self.SetupServer(updateFunction)
 
-    def SetupServer(self):
+    def SetupServer(self, updateFunction):
         """ Sets the websocket_server event handlers
         """
         self.Server.set_fn_client_left(self._ClientLeft)
         self.Server.set_fn_message_received(self._MessageReceived)
-        self.Server.set_fn_new_client(self._ClientConnected)
+        self.Server.set_fn_new_client(updateFunction)
 
     def StartServer(self):
         """Starts the websocket_server forever
@@ -30,8 +30,8 @@ class WebSocketServer():
         Arguments:
             data {String} -- [String of text to be send]
         """
-        print("[x] Sending message to all the clients.")
-        self.Server.send_message_to_all(data)
+        # print("[x] Sending message to all the clients.")
+        self.Server.send_message_to_all(data)        
 
     def CloseServer(self):
         """Closes the websocket server

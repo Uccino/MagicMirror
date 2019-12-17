@@ -21,11 +21,13 @@ class NewsModule(MirrorModule):
         return self.ApiSource.GetNews()
 
     def BuildPageMarkup(self):
+        
         pageData = self.GetPageData()
         self.PageMarkup = self.PageBuilder.BuildTemplate(
             "news_page.html", pageData)
 
     def GetPageMarkup(self):
+        print(f"News data: {self.PageMarkup}")
         return self.PageMarkup
 
     def BuildPageNotifications(self):

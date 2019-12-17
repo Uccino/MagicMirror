@@ -58,6 +58,10 @@ class ModuleManager():
             for i in range(0, len(self.Pages)):
                 self.Pages[i].BuildPageNotifications()
             time.sleep(180)
+    
+    def UpdatePages(self):
+        for i in range(0, len(self.Pages)):
+            self.Pages[i].BuildPageMarkup()
 
     def UpdatePageData(self):
         """Updates all the data in the mirror pages

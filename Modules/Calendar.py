@@ -24,7 +24,7 @@ class CalendarModule(MirrorModule):
     def ZoomOut(self):
         pass
 
-    def BuildPageMarkup(self):
+    def BuildPageMarkup(self):        
         pageData = self.GetPageData()
         self.PageMarkup = self.PageBuilder.BuildTemplate("calendar_page.html", pageData)
 
@@ -110,7 +110,7 @@ class CalendarRequester():
                 creds = flow.run_local_server(port=0)
             with open('./token.pickle','wb') as token:
                 pickle.dump(creds, token)       
-        service = build('calendar', 'v3', credentials=creds)
+        service = build('calendar', 'v3', credentials=creds, cache_discovery=False)
         return service
 
     def GetEvents(self, amount):
