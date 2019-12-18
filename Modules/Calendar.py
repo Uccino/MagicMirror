@@ -22,8 +22,7 @@ class CalendarModule(MirrorModule):
     def ZoomOut(self):
         pass
 
-    def BuildPageMarkup(self):
-        pageData = self.GetPageData()
+    def BuildPageMarkup(self, pageData):
         self.PageMarkup = self.PageBuilder.BuildTemplate(
             "calendar_page.html", pageData)
 

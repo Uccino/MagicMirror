@@ -1,4 +1,8 @@
 {
+    "mirror": {
+        "data_update_interval": 180,
+        "mirror_refresh_interval": 10
+    },
     "websockets": {
         "ip": "192.168.2.12",
         "port": 8000
@@ -15,10 +19,10 @@
             "latitude": "52.0003698",
             "longitude": "5.9457117"
         }
-    },    
+    },
     "news": {
-        "url": "http://192.168.2.13:8080/news/getnews"
-    },    
+        "url": "http://192.168.2.12:8080/news/getnews"
+    },
     "installed": {
         "client_id": "428652087031-fj525lusu336fepnf53b70gl3ndep2mm.apps.googleusercontent.com",
         "project_id": "quickstart-1575380015673",

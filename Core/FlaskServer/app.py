@@ -1,4 +1,5 @@
 
+import flask_models
 from flask import Flask, request, render_template, flash, redirect, jsonify, session
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
@@ -20,7 +21,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # We import the models **AFTER** initializing the database
-import flask_models
 # Starts the server
 
 
@@ -36,15 +36,16 @@ def StartServer(ip, port, debugValue=False):
         log.setLevel(logging.FATAL)
     app.run(debug=debugValue, host=ip, port=port)
 
+
 def login_required(f):
     """[Decorator to check if an user has been logged in]
-    
+
     Arguments:
         f {[type]} -- [description]
-    
+
     Returns:
         [type] -- [description]
-    """    
+    """
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'logged_in' in session:
@@ -109,5 +110,4 @@ def mirror():
 
 # This only gets used when we start the webserver.py via shell
 if __name__ == '__main__':
-    print(f"{sys.argv[1]}, {sys.argv[2]}")
     StartServer(sys.argv[1], sys.argv[2], True)

@@ -1,39 +1,71 @@
-from Core import grove_gesture_sensor
 import time
+import sys
+
+__PLATFORM = sys.platform
+if __PLATFORM == 'linux':
+    from Core import grove_gesture_sensor
 
 
 class InputHandler():
 
-    def __init__(self, moduleManager, mirrorManager):
-        self.Grove = grove_gesture_sensor.gesture()
-        self.Grove.init()
-        self.ModuleManager = moduleManager
-        self.MirrorManager = mirrorManager
+    def __init__(self, position_manager, data_manager, connection_handler):
 
-    def GetGestureInput(self):
+        self.Position_manager = position_manager
+        self.DataHandler = data_manager
+        self.Connection_handler = connection_handler
+
+    def GetUserInput(self):
+        if sys.platform == 'linux':
+            self._GetGestureInput()
+        else:
+            self._GetKeyboardInput()
+
+    def _GetGestureInput(self):
+        grove = grove_gesture_sensor.gesture()
+        grove.init()
         while 1:
-            gesture = self.Grove.return_gesture()
-
+            gesture = grove.return_gesture()
             # Match the gesture
-            if gesture == self.Grove.RIGHT:
-
-                self.ModuleManager.NextPage()
+            if gesture == grove.RIGHT:
+                self.Position_manager.NextPage()
                 self._UpdateMirror()
-            elif gesture == self.Grove.LEFT:
-
-                self.ModuleManager.PreviousPage()
+            elif gesture == grove.LEFT:
+                self.Position_manager.PreviousPage()
                 self._UpdateMirror()
-            elif gesture == self.Grove.UP:
-
-                self.ModuleManager.ZoomIn()
+            elif gesture == grove.UP:
+                self.Position_manager.ZoomIn()
                 self._UpdateMirror()
-            elif gesture == self.Grove.DOWN:
+            elif gesture == grove.DOWN:
+                self.Position_manager.ZoomOut()
+                self._UpdateMirror()
+            else:
+                pass
+            time.sleep(.1)
 
-                self.ModuleManager.ZoomOut()
+    def _GetKeyboardInput(self):
+        while 1:
+            inputKey = input("Give input: ")
+
+            if inputKey == 'd':
+
+                self.Position_manager.NextPage()
+                self._UpdateMirror()
+            elif inputKey == 'a':
+
+                self.Position_manager.PreviousPage()
+                self._UpdateMirror()
+            elif inputKey == 'w':
+
+                self.Position_manager.ZoomIn()
+                self._UpdateMirror()
+            elif inputKey == 's':
+
+                self.Position_manager.ZoomOut()
                 self._UpdateMirror()
             else:
                 pass
             time.sleep(.1)
 
     def _UpdateMirror(self):
-        self.MirrorManager.UpdateMirrorPage()
+        mirrorData = self.DataHandler.GetModuleData()
+        self.Connection_handler.SendMirrorPage(mirrorData)

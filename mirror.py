@@ -1,9 +1,9 @@
 from Core.HtmlBuilder import HtmlBuilder
-from Core.ModuleManager import ModuleManager
+from Core.ModuleManager import ModuleDataManager, ModulePositionManager
+from Core.Websockets import WebSocketServer, MirrorConnectionHandler
 from Core.Webserver import Webserver
-from Core.Websockets import WebSocketServer
-# from Core.InputHandler import InputHandler
-from Core.MirrorManager import MirrorManager
+from Core.InputHandler import InputHandler
+
 from Modules import News, Weather, Calendar
 
 import os
@@ -23,8 +23,6 @@ def main():
         print("[!] Unable to read the configuration file!")
         return
 
-    pageBuilder = HtmlBuilder()
-
     wsServer = StartWebsocketServer(mirrorConfig)
     if wsServer == None:
         print("[!] Unable to start the websocket server! ")
@@ -34,27 +32,50 @@ def main():
         print("[!] Unable to start the webserver! ")
         return
 
+    pageBuilder = HtmlBuilder()
     # All the pages we're going to use
     pages = [
-        Calendar.CalendarModule(mirrorConfig, pageBuilder),
         Weather.WeatherModule(mirrorConfig, pageBuilder),
+        Calendar.CalendarModule(mirrorConfig, pageBuilder),
         News.NewsModule(mirrorConfig, pageBuilder)
     ]
 
-    moduleManager = ModuleManager(pages)
-    mirrorManager = MirrorManager(wsServer, moduleManager)
+    # Module position, module data, mirror connection and input classes
+    module_position_manager = ModulePositionManager(pages)
+    module_data_manager = ModuleDataManager(module_position_manager)
+    connection_handler = MirrorConnectionHandler(wsServer)
+    user_input_handler = InputHandler(
+        module_position_manager, module_data_manager, connection_handler)
 
-    # inputHandler = InputHandler(moduleManager, mirrorManager)
-    # inputThread = threading.Thread(target=inputHandler.GetGestureInput, daemon=True)
-    # inputThread.start()
+    # Uses keyboard & mouse on windows and gesture input on linux
+    input_thread = threading.Thread(
+        target=user_input_handler.GetUserInput, daemon=True)
+    input_thread.start()
 
-    moduleManager.UpdatePages()
-    mirrorManager.UpdateMirrorPage()
-    mirrorManager.StartUpdatingData()
+    data_update_interval = mirrorConfig["mirror"]["data_update_interval"]
+    refresh_interval = mirrorConfig["mirror"]["mirror_refresh_interval"]
 
-    # StartWebview(mirrorConfig)
+    # Thread to update the module data
+    data_update_thread = threading.Thread(
+        target=module_data_manager.StartUpdatingMirrorData, daemon=True, args=[data_update_interval])
+    data_update_thread.start()
+
+    # Thread to keep refreshing the mirror page every few seconds
+    mirror_refresh_thread = threading.Thread(target=RefreshMirror, args=[
+        connection_handler, module_data_manager, refresh_interval])
+    mirror_refresh_thread.daemon = True
+    mirror_refresh_thread.start()
+
     while 1:
         pass
+
+
+def RefreshMirror(mirror_connection, mirror_data, refresh_interval):
+    while 1:
+        data = mirror_data.GetModuleData()
+        mirror_connection.SendMirrorPage(data)
+
+        time.sleep(refresh_interval)
 
 
 def StartWebsocketServer(mirrorConfig):

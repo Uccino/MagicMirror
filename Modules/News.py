@@ -17,17 +17,11 @@ class NewsModule(MirrorModule):
     def ZoomOut(self):
         pass
 
-    def GetPageData(self):
-        return self.ApiSource.GetNews()
-
-    def BuildPageMarkup(self):
-
-        pageData = self.GetPageData()
+    def BuildPageMarkup(self, pageData):
         self.PageMarkup = self.PageBuilder.BuildTemplate(
             "news_page.html", pageData)
 
     def GetPageMarkup(self):
-        print(f"News data: {self.PageMarkup}")
         return self.PageMarkup
 
     def BuildPageNotifications(self):
@@ -35,6 +29,9 @@ class NewsModule(MirrorModule):
 
     def GetPageNotifications(self):
         pass
+
+    def GetPageData(self):
+        return self.ApiSource.GetNews()
 
 
 class NewsRequester():

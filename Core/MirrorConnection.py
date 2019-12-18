@@ -3,7 +3,7 @@ import json
 import threading
 
 
-class MirrorManager():
+class ConnectionHandler():
 
     def __init__(self, websocketServer, moduleManager):
         self.Websockets = websocketServer
@@ -43,6 +43,7 @@ class MirrorManager():
             "data": data
         }
         b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
+        print(data)
         self.Websockets.SendMessage(b64data)
 
     def __SendMirrorNotification(self, data):
