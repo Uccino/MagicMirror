@@ -33,9 +33,9 @@ class CalendarModule(MirrorModule):
         self.PageData = self.ApiSource.GetEvents(10)
         return self.PageData
 
-    def BuildPageNotifications(self):
+    def BuildPageNotifications(self, pageData):
         self.PageNotifications = []
-        upcommingEvents = self._GetUpcommingEvents()
+        upcommingEvents = self._GetUpcommingEvents(pageData)
         for i in range(0, len(upcommingEvents)):
             event = upcommingEvents[i]
             eventDate = parser.parse(event["start_date"]).date()
@@ -54,7 +54,7 @@ class CalendarModule(MirrorModule):
             notifications.append(f"<p> {notification} </p>")
         return notifications
 
-    def _GetUpcommingEvents(self):
+    def _GetUpcommingEvents(self, pageData):
         """Parses the current events to check if there are any within 11 days
 
         Returns:
@@ -64,11 +64,11 @@ class CalendarModule(MirrorModule):
         """
         upcomingEvents = []
         dateNow = datetime.datetime.utcnow()
-        for i in range(0, len(self.PageData)):
-            eventDate = self.PageData[i]['start_date']
+        for i in range(0, len(pageData)):
+            eventDate = pageData[i]['start_date']
             eventDateTime = parser.parse(eventDate)
             if dateNow.date() + datetime.timedelta(days=11) >= eventDateTime.date():
-                upcomingEvents.append(self.PageData[i])
+                upcomingEvents.append(pageData[i])
         return upcomingEvents
 
 

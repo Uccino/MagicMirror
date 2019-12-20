@@ -26,6 +26,21 @@ class MirrorConnectionHandler():
         b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
         self.SocketServer.SendMessage(b64data)
 
+    def SendMirrorNotifications(self, data):
+        """[Sends the HTML markup as a mirror page to all clients]
+
+        Arguments:
+
+            websocketServer {[WebsocketServer]} -- [Websocket server with the clients]
+            data {[str]} -- [HTML markup to be send to the mirror]
+        """
+        pageData = {
+            "type": "mirror_notification",
+            "data": data
+        }
+        b64data = base64.b64encode(json.dumps(pageData).encode('utf-8'))
+        self.SocketServer.SendMessage(b64data)
+
 
 class WebSocketServer():
     def __init__(self, ip, port):

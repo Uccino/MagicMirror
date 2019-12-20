@@ -11,6 +11,7 @@ class ModuleDataManager():
     def StartUpdatingMirrorData(self, update_interval):
         while 1:
             self.UpdateModuleData()
+            self.UpdateModuleNotifications()
             time.sleep(update_interval)
 
     def UpdateModuleData(self):
@@ -25,6 +26,25 @@ class ModuleDataManager():
     def GetModuleData(self):
         current_module = self.Position_manager.GetCurrentModule()
         return current_module.GetPageMarkup()
+
+    def UpdateModuleNotifications(self):
+        mirror_modules = self.Position_manager.GetMirrorModules()
+        for i in range(0, len(mirror_modules)):
+            module = mirror_modules[i]
+            module_data = module.GetPageData()
+            if module_data is not None:
+                module.BuildPageNotifications(module_data)
+        self.Position_manager.SetMirrorModules(mirror_modules)
+
+    def GetModuleNotifications(self):
+        mirror_modules = self.Position_manager.GetMirrorModules()
+        notifications = []
+        for i in range(0, len(mirror_modules)):
+            module = mirror_modules[i]
+            module_notifications = module.GetPageNotifications()
+            if module_notifications is not None:
+                notifications.append(module_notifications)
+        return notifications
 
 
 class ModulePositionManager():

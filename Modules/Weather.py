@@ -75,11 +75,11 @@ class WeatherModule(MirrorModule):
         self.WeeklyPageMarkup = self.PageBuilder.BuildTemplate(
             "weather_weekly.html", weeklyData)
 
-    def BuildPageNotifications(self):
+    def BuildPageNotifications(self, pageData):
         pass
 
     def GetPageNotifications(self):
-        pass
+        return None
 
 
 class DarkSkyWeather():

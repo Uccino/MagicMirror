@@ -24,11 +24,11 @@ class NewsModule(MirrorModule):
     def GetPageMarkup(self):
         return self.PageMarkup
 
-    def BuildPageNotifications(self):
+    def BuildPageNotifications(self, pageData):
         pass
 
     def GetPageNotifications(self):
-        pass
+        return None
 
     def GetPageData(self):
         return self.ApiSource.GetNews()

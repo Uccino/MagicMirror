@@ -12,7 +12,6 @@ import json
 import threading
 import webview
 import time
-import base64
 
 __PLATFORM = sys.platform
 
@@ -40,7 +39,6 @@ def main():
         News.NewsModule(mirrorConfig, pageBuilder)
     ]
 
-    # Module position, module data, mirror connection and input classes
     module_position_manager = ModulePositionManager(pages)
     module_data_manager = ModuleDataManager(module_position_manager)
     connection_handler = MirrorConnectionHandler(wsServer)
@@ -53,7 +51,8 @@ def main():
     input_thread.start()
 
     data_update_interval = mirrorConfig["mirror"]["data_update_interval"]
-    refresh_interval = mirrorConfig["mirror"]["mirror_refresh_interval"]
+    page_refresh_interval = mirrorConfig["mirror"]["mirror_refresh_interval"]
+    notification_refresh_interval = mirrorConfig["mirror"]["notification_refresh_interval"]
 
     # Thread to update the module data
     data_update_thread = threading.Thread(
@@ -62,12 +61,26 @@ def main():
 
     # Thread to keep refreshing the mirror page every few seconds
     mirror_refresh_thread = threading.Thread(target=RefreshMirror, args=[
-        connection_handler, module_data_manager, refresh_interval])
+        connection_handler, module_data_manager, page_refresh_interval])
     mirror_refresh_thread.daemon = True
     mirror_refresh_thread.start()
 
+    # Thread to refresh the mirror's notifications every few seconds
+    notification_refresh_thread = threading.Thread(
+        target=RefreshNotifications, args=[
+            connection_handler, module_data_manager, page_refresh_interval])
+    notification_refresh_thread.daemon = True
+    notification_refresh_thread.start()
+
     while 1:
         pass
+
+
+def RefreshNotifications(mirror_connection, mirror_data, refresh_interval):
+    while 1:
+        mirror_notifications = mirror_data.GetModuleNotifications()
+        mirror_connection.SendMirrorNotifications(mirror_notifications)
+        time.sleep(refresh_interval)
 
 
 def RefreshMirror(mirror_connection, mirror_data, refresh_interval):
