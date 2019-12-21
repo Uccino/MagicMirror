@@ -1,8 +1,16 @@
 const wsUrl = "ws://192.168.2.12:8000";
 websocket = new WebSocket(wsUrl);
-const getConfigJson = {
-    "message": "get_config"
-}
+
+var notifications = [];
+
+window.setInterval(async function () {
+    if (notifications.length != 0) {
+        for (let i = 0; i < notifications.length; i++) {
+            document.getElementById("mirror-notification").innerHTML = notifications[i];
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+}, 4000);
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -12,7 +20,6 @@ const sleep = (milliseconds) => {
 websocket.addEventListener('open', function (event) {
     // Send GET/Config message to the server    
     console.log("Connection opened!");
-    //websocket.send(JSON.stringify(getConfigJson));
 });
 
 // Event listener for when a message has been send
@@ -34,7 +41,7 @@ websocket.addEventListener('close', function (event) {
 
 function base64DecodeUnicode(str) {
     // Convert Base64 encoded bytes to percent-encoding, and then get the original string.
-    percentEncodedStr = atob(str).split('').map(function(c) {
+    percentEncodedStr = atob(str).split('').map(function (c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join('');
 
@@ -42,15 +49,15 @@ function base64DecodeUnicode(str) {
     return decodeURIComponent(percentEncodedStr);
 }
 
-function ParseMessage(message)
-{    
+function ParseMessage(message) {
     jsonObject = JSON.parse(base64DecodeUnicode(message));
-    if(jsonObject.type == "mirror_page")
-    {
+    if (jsonObject.type == "mirror_page") {
         document.getElementById("module").innerHTML = jsonObject.data;
-    }
-    else if(jsonObject.type == "mirror_notification")
-    {
-        document.getElementById("mirror-notification").innerHTML = jsonObject.data;
+    } else if (jsonObject.type == "mirror_notification") {
+        mirror_notifications = jsonObject.data[0];
+        notifications = [];
+        for (let i = 0; i < mirror_notifications.length; i++) {
+            notifications.push(mirror_notifications[i])
+        }
     }
 }
