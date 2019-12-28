@@ -4,7 +4,7 @@ from Core.Websockets import WebSocketServer, MirrorConnectionHandler
 from Core.Webserver import Webserver
 from Core.InputHandler import InputHandler
 
-from Modules import News, Weather, Calendar
+from Modules import News, Weather, Calendar, SensorInfo
 
 import os
 import sys
@@ -22,6 +22,20 @@ def main():
         print("[!] Unable to read the configuration file!")
         return
 
+    pageBuilder = HtmlBuilder()
+    # All the pages we're going to use
+    pages = []
+    try:
+        pages = [
+            SensorInfo.SensorModule(mirrorConfig, pageBuilder),
+            Weather.WeatherModule(mirrorConfig, pageBuilder),
+            Calendar.CalendarModule(mirrorConfig, pageBuilder),
+            News.NewsModule(mirrorConfig, pageBuilder)
+        ]
+    except Exception as e:
+        print(e)
+        return
+
     wsServer = StartWebsocketServer(mirrorConfig)
     if wsServer == None:
         print("[!] Unable to start the websocket server! ")
@@ -30,14 +44,6 @@ def main():
     if StartWebserver(mirrorConfig) == False:
         print("[!] Unable to start the webserver! ")
         return
-
-    pageBuilder = HtmlBuilder()
-    # All the pages we're going to use
-    pages = [
-        Weather.WeatherModule(mirrorConfig, pageBuilder),
-        Calendar.CalendarModule(mirrorConfig, pageBuilder),
-        News.NewsModule(mirrorConfig, pageBuilder)
-    ]
 
     module_position_manager = ModulePositionManager(pages)
     module_data_manager = ModuleDataManager(module_position_manager)
