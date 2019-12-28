@@ -9,7 +9,7 @@ import pickle
 
 
 class CalendarModule(MirrorModule):
-    def __init__(self, mirrorConfig, pageBuilder):
+    def __init__(self, pageBuilder):
         self.ApiSource = CalendarRequester()
         self.PageBuilder = pageBuilder
         self.PageMarkup = None
@@ -90,12 +90,12 @@ class CalendarRequester():
         creds = None
 
         # Check if there already is an authentication token
-        if os.path.exists("./token.pickle"):
-            with open("./token.pickle", 'rb') as token:
+        if os.path.exists("/data/calendar_token.pickle"):
+            with open("/data/calendar_token.pickle", 'rb') as token:
                 creds = pickle.load(token)
 
-        if not os.path.exists("./config.json"):
-            raise Exception("Unable to find config.json")
+        if not os.path.exists("/data/calendar_config.json"):
+            raise Exception("Unable to find /data/calendar_config.json")
 
         # If the credentials are not valid, ask for new ones
         if not creds or not creds.valid:
