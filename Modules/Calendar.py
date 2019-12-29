@@ -6,6 +6,7 @@ from dateutil import parser
 import os.path
 import datetime
 import pickle
+import os
 
 
 class CalendarModule(MirrorModule):
@@ -89,13 +90,16 @@ class CalendarRequester():
         SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
         creds = None
 
+        print(os.getcwd())
+
         # Check if there already is an authentication token
-        if os.path.exists("/data/calendar_token.pickle"):
-            with open("/data/calendar_token.pickle", 'rb') as token:
+        if os.path.exists(f"{os.getcwd()}\Modules\data\calendar_token.pickle"):
+            with open(f"{os.getcwd()}\Modules\data\calendar_token.pickle", 'rb') as token:
                 creds = pickle.load(token)
 
-        if not os.path.exists("/data/calendar_config.json"):
-            raise Exception("Unable to find /data/calendar_config.json")
+        if not os.path.exists(f"{os.getcwd()}\Modules\data\calendar_config.json"):
+            raise Exception(
+                f"Unable to find {os.getcwd()}\Modules\data\calendar_config.json")
 
         # If the credentials are not valid, ask for new ones
         if not creds or not creds.valid:
@@ -103,11 +107,11 @@ class CalendarRequester():
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    "./config.json",
+                    f"{os.getcwd()}\Modules\data\calendar_config.json",
                     SCOPES
                 )
                 creds = flow.run_local_server(port=0)
-            with open('./token.pickle', 'wb') as token:
+            with open(f"{os.getcwd()}\Modules\data\calendar_token.pickle", 'wb') as token:
                 pickle.dump(creds, token)
         service = build('calendar', 'v3', credentials=creds,
                         cache_discovery=False)

@@ -29,10 +29,11 @@ def main():
         pages = [
             SensorInfo.SensorModule(mirrorConfig, pageBuilder),
             Weather.WeatherModule(mirrorConfig, pageBuilder),
-            Calendar.CalendarModule(mirrorConfig, pageBuilder),
+            Calendar.CalendarModule(pageBuilder),
             News.NewsModule(mirrorConfig, pageBuilder)
         ]
     except Exception as e:
+        print("Unable to setup the modules properly. Error:")
         print(e)
         return
 
@@ -47,6 +48,10 @@ def main():
 
     module_position_manager = ModulePositionManager(pages)
     module_data_manager = ModuleDataManager(module_position_manager)
+
+    while wsServer.IsRunning() is not True:
+        time.sleep(1)
+
     connection_handler = MirrorConnectionHandler(wsServer)
     user_input_handler = InputHandler(
         module_position_manager, module_data_manager, connection_handler)
@@ -78,6 +83,8 @@ def main():
     notification_refresh_thread.daemon = True
     notification_refresh_thread.start()
 
+    # This is going to be changed in a pywebview but I cba right now as
+    # it is not that important for the functionality of the software.
     while 1:
         pass
 
@@ -108,15 +115,23 @@ def StartWebsocketServer(mirrorConfig):
 
         [WebsocketServer] -- [Returns a websocket server instance if the server was succesfully started, else it returns none]
     """
-    serverIp = mirrorConfig["websockets"]["ip"]
-    serverPort = mirrorConfig["websockets"]["port"]
+    serverIp = None
+    serverPort = None
+
+    try:
+        serverIp = mirrorConfig["websockets"]["ip"]
+        serverPort = mirrorConfig["websockets"]["port"]
+    except:
+        return None
+
     wsServer = WebSocketServer(serverIp, serverPort)
     websocketThread = threading.Thread(target=wsServer.StartServer)
     websocketThread.daemon = True
+
     try:
         websocketThread.start()
         return wsServer
-    except Exception:
+    except:
         return None
 
 
@@ -139,7 +154,7 @@ def StartWebserver(mirrorConfig):
     try:
         websocketThread.start()
         return True
-    except BaseException:
+    except:
         return False
 
 
@@ -173,22 +188,18 @@ def ReadConfig(path="./config.json"):
         dict -- Configuration in JSON format
 
     """
+    dir_path = ""
     if __PLATFORM == "win32":
         dir_path = os.path.dirname(
             os.path.realpath(__file__)) + r"\config.json"
-        if(not os.path.exists(dir_path)):
-            return None
-        with open(dir_path, 'r') as jsonFile:
-            configData = json.load(jsonFile)
-            return configData
     elif __PLATFORM == "linux":
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/config.json"
-        print(dir_path)
-        if(not os.path.exists(dir_path)):
-            return None
-        with open(dir_path, 'r') as jsonFile:
-            configData = json.load(jsonFile)
-            return configData
+
+    if(not os.path.exists(dir_path)):
+        return None
+    with open(dir_path, 'r') as jsonFile:
+        configData = json.load(jsonFile)
+        return configData
 
 
 if __name__ == "__main__":

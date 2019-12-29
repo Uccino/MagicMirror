@@ -1,0 +1,35 @@
+{
+  "app_id": "evearduinos",
+  "dev_id": "evearduino05",
+  "hardware_serial": "0037535D2AC662FA",
+  "port": 1,
+  "counter": 1173,
+  "payload_raw": "IgASAA==",
+  "payload_fields": {
+    "Humidity": 34,
+    "Temperature": 18
+  },
+  "metadata": {
+    "time": "2019-12-28T18:20:48.527612113Z",
+    "frequency": 868.1,
+    "modulation": "LORA",
+    "data_rate": "SF7BW125",
+    "airtime": 51456000,
+    "coding_rate": "4/5",
+    "gateways": [
+      {
+        "gtw_id": "home-made-second-ic880a-rpi3",
+        "gtw_trusted": true,
+        "timestamp": 364737379,
+        "time": "",
+        "channel": 0,
+        "rssi": -120,
+        "snr": -7,
+        "rf_chain": 1,
+        "latitude": 51.954266,
+        "longitude": 5.90666,
+        "altitude": 55
+      }
+    ]
+  }
+}
