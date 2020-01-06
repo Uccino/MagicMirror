@@ -35,6 +35,11 @@ class CalendarModule(MirrorModule):
         return self.PageData
 
     def BuildPageNotifications(self, pageData):
+        """Gets the upcomming events and builds notification markup for each event within a certain timeframe
+
+        Arguments:
+            pageData {[dict]} -- [Dictionary containing event data]
+        """
         self.PageNotifications = []
         upcommingEvents = self._GetUpcommingEvents(pageData)
         for i in range(0, len(upcommingEvents)):
@@ -49,6 +54,11 @@ class CalendarModule(MirrorModule):
             self.PageNotifications.append(event_notification)
 
     def GetPageNotifications(self):
+        """Returns the calendar current events
+
+        Returns:
+            [str] -- [HTML markup]
+        """
         notifications = []
         for i in range(0, len(self.PageNotifications)):
             notification = self.PageNotifications[i]

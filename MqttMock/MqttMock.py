@@ -8,6 +8,9 @@ def connected():
 
 
 def main():
+
+    print("[X] This python file is only ment as a mock data supplier")
+
     if not os.path.exists("data.json"):
         print("[X] Data.json not found!")
         return

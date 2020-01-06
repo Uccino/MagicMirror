@@ -15,12 +15,16 @@ class InputHandler():
         self.Connection_handler = connection_handler
 
     def GetUserInput(self):
+        """Gets the user input
+        """
         if sys.platform == 'linux':
             self._GetGestureInput()
         else:
             self._GetKeyboardInput()
 
     def _GetGestureInput(self):
+        """Gets the gesture input from the sensor
+        """
         grove = grove_gesture_sensor.gesture()
         grove.init()
         while 1:
@@ -43,6 +47,8 @@ class InputHandler():
             time.sleep(.1)
 
     def _GetKeyboardInput(self):
+        """Gets the keyboard input
+        """
         while 1:
             inputKey = input("Give input: ")
 
@@ -67,5 +73,7 @@ class InputHandler():
             time.sleep(.1)
 
     def _UpdateMirror(self):
+        """Updates the mirror, should only be called after a change in user input
+        """
         mirrorData = self.DataHandler.GetModuleData()
         self.Connection_handler.SendMirrorPage(mirrorData)

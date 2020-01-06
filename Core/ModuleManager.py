@@ -15,6 +15,8 @@ class ModuleDataManager():
             time.sleep(update_interval)
 
     def UpdateModuleData(self):
+        """Updates the date for each module in the list
+        """
         mirror_modules = self.Position_manager.GetMirrorModules()
         for i in range(0, len(mirror_modules)):
             module = mirror_modules[i]
@@ -24,10 +26,17 @@ class ModuleDataManager():
         self.Position_manager.SetMirrorModules(mirror_modules)
 
     def GetModuleData(self):
+        """Returns the data for the currently active module
+
+        Returns:
+            [str] -- [HTML markup of the current page]
+        """
         current_module = self.Position_manager.GetCurrentModule()
         return current_module.GetPageMarkup()
 
     def UpdateModuleNotifications(self):
+        """Updates the module's notifications if there are any
+        """
         mirror_modules = self.Position_manager.GetMirrorModules()
         for i in range(0, len(mirror_modules)):
             module = mirror_modules[i]
@@ -37,6 +46,11 @@ class ModuleDataManager():
         self.Position_manager.SetMirrorModules(mirror_modules)
 
     def GetModuleNotifications(self):
+        """Gets the module notification markup in a list
+
+        Returns:
+            [list of str] -- [list containing all the notifications]
+        """
         mirror_modules = self.Position_manager.GetMirrorModules()
         notifications = []
         for i in range(0, len(mirror_modules)):

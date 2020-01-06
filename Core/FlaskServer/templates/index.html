@@ -1,11 +1,11 @@
 {%extends 'base.html'%}
 {%block content%}
 {% with messages = get_flashed_messages() %}
-    {% if messages %}    
-        {% for message in messages %}
-            <div class="notification is-primary">{{message}}</div>
-        {% endfor %}    
-    {% endif %}
+{% if messages %}
+{% for message in messages %}
+<div class="notification is-primary">{{message}}</div>
+{% endfor %}
+{% endif %}
 {% endwith %}
 <div class="columns">
     <div class="column is-6">
@@ -14,27 +14,32 @@
             <div class="field">
                 <label class="label">Titel</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="Text input" name="post_title">
+                    <input class="input" type="text" placeholder="Text input" name="post_title" maxlength="32" required>
                 </div>
             </div>
             <div class="field">
                 <label class="label">Bericht</label>
-                <textarea class="textarea" placeholder="Vandaag in het nieuws..." rows="7" name="post_content"></textarea>
+                <textarea class="textarea" placeholder="Vandaag in het nieuws..." rows="7" name="post_content"
+                    maxlength="280" required></textarea>
             </div>
             <br>
             <button class="button is-primary" type="submit">Versturen</button>
         </form>
     </div>
     <div class="column is-6">
-        <div class="list">            
-            {% for item in data %}
+        <div class="list">
+            <form action="/news/delete" method="post">
+                {% for item in data %}
                 <a class="list-item">
-                <div class="content">
-                    <h2 class="title">{{item.title}} | {{item.date_posted.strftime('%Y-%m-%d')}}</h2>
-                    <p>{{item.content}}</p>
-                </div>
-            </a>
-            {% endfor %}
+                    <div class="content">
+                        <h2 class="title">{{item.title}} | {{item.date_posted.strftime('%Y-%m-%d')}}</h2>
+                        <p>{{item.content}}</p>
+                    </div>
+                    <button class="button is-primary" type="submit" name="deletebutton"
+                        value="{{item.id}}">Verwijder</button>
+                </a>
+                {% endfor %}
+            </form>
         </div>
     </div>
 </div>

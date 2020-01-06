@@ -1,4 +1,3 @@
-
 import flask_models
 from flask import Flask, request, render_template, flash, redirect, jsonify, session
 from functools import wraps
@@ -68,7 +67,7 @@ def index():
 def login():
     if request.method == "GET":
         if 'logged_in' in session:
-            return redirect('/')
+            return redirect('/news')
         return render_template('login.html')
     else:
         username = request.form["username"]
@@ -78,7 +77,7 @@ def login():
             username=username, password=password).first()
         if user is not None:
             session["logged_in"] = True
-            return redirect('/')
+            return redirect('/news')
         else:
             return redirect('/news/login')
 
@@ -101,6 +100,13 @@ def getnews():
     return jsonify(posts=[
         i.serialize() for i in all_posts
     ])
+
+
+@app.route('/news/delete', methods=["POST"])
+def deleteitem():
+    item_id = request.form["deletebutton"]
+    flask_models.Post.query.filter_by(id=item_id).delete()
+    return redirect('/news')
 
 
 @app.route("/mirror")

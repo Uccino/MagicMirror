@@ -21,6 +21,11 @@ class SensorModule(MirrorModule):
         pass
 
     def GetPageData(self):
+        """Gets the data from the MQTT client
+
+        Returns:
+            [dict] -- [dictionary containing sensor data]
+        """
         mqtt_data = self.MqttClient.GetMqttData()
         if mqtt_data is not None:
             return self.DataParser.ParseJsonData(mqtt_data)
@@ -32,6 +37,11 @@ class SensorModule(MirrorModule):
             }
 
     def BuildPageMarkup(self, pageData):
+        """Builds the page markup for the sensor data
+
+        Arguments:
+            pageData {[str]} -- [HTML markup for the sensor data]
+        """
         self.PageMarkup = self.PageBuilder.BuildTemplate(
             "sensor_info.html", pageData)
 
