@@ -7,6 +7,7 @@ import os.path
 import datetime
 import pickle
 import os
+import sys
 
 
 class CalendarModule(MirrorModule):
@@ -100,16 +101,25 @@ class CalendarRequester():
         SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
         creds = None
 
-        print(os.getcwd())
+        platform = sys.platform
+
+        token_path = None
+        config_path = None
+        if platform == 'linux':
+            token_path = "/Modules/Data/calendar_token.pickle"
+            config_path = "/Modules/data/calendar_config.json"
+        else:
+            token_path = "\Modules\Data\calendar_token.pickle"
+            config_path = "\Modules\data\calendar_config.json"
 
         # Check if there already is an authentication token
-        if os.path.exists(f"{os.getcwd()}\Modules\data\calendar_token.pickle"):
-            with open(f"{os.getcwd()}\Modules\data\calendar_token.pickle", 'rb') as token:
+        if os.path.exists(f"{os.getcwd()}{token_path}"):
+            with open(f"{os.getcwd()}{token_path}", 'rb') as token:
                 creds = pickle.load(token)
 
-        if not os.path.exists(f"{os.getcwd()}\Modules\data\calendar_config.json"):
+        if not os.path.exists(f"{os.getcwd()}{config_path}"):
             raise Exception(
-                f"Unable to find {os.getcwd()}\Modules\data\calendar_config.json")
+                f"Unable to find {os.getcwd()}{config_path}")
 
         # If the credentials are not valid, ask for new ones
         if not creds or not creds.valid:
@@ -117,11 +127,11 @@ class CalendarRequester():
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    f"{os.getcwd()}\Modules\data\calendar_config.json",
+                    f"{os.getcwd()}{config_path}",
                     SCOPES
                 )
                 creds = flow.run_local_server(port=0)
-            with open(f"{os.getcwd()}\Modules\data\calendar_token.pickle", 'wb') as token:
+            with open(f"{os.getcwd()}{token_path}", 'wb') as token:
                 pickle.dump(creds, token)
         service = build('calendar', 'v3', credentials=creds,
                         cache_discovery=False)
