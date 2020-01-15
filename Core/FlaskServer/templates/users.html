@@ -1,0 +1,39 @@
+{%extends "base.html"%}
+
+{%block content%}
+<div class="columns is-centered">
+    <div class="column is-8">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="notification is-primary">{{message}}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card">
+            <form action="" method="post">
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Gebruikersnaam</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <th>{{user.username}}</th>
+                            <th><button name="adminbutton" value="{{user.id}}" class="button is-primary"
+                                    type="submit">Maak beheerder</button></th>
+                            <th><button name="deletebutton" value="{{user.id}}" class="button is-danger"
+                                    type="submit">Verwijder</button></th>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+{%endblock%}

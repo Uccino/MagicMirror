@@ -4,12 +4,43 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='news_css/bulma.css')}}">    
-    <link rel="stylesheet" href="{{url_for('static', filename='news_js/functions.js')}}">    
+    <title>MagicNews</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='news_css/bulma.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='news_js/functions.js')}}">
 </head>
 
-<body>    
+<body>
+    {%if session%}
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/news">
+                    <h1 class="title">MagicMirrorNews</h1>
+                </a>
+            </div>
+
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            {%if admin%}
+                            <a class="button is-primary" href="/news/users/add">
+                                Add new user
+                            </a>
+                            <a class="button is-primary" href="/news/users/manage">
+                                All users
+                            </a>
+                            {%endif%}
+                            <a class="button is-warning" href="/news/logout">
+                                Log out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {%endif%}
     <section class="section">
         <div class="container">
             {%block content%}

@@ -1,26 +1,10 @@
-import flask_models
 from flask import Flask, request, render_template, flash, redirect, jsonify, session
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
+from settings import app, Flask, db
 import logging
 import sys
-
-# Flask setup
-app = Flask(
-    __name__,
-    template_folder='./templates',
-    static_folder='./static'
-)
-
-app.secret_key = 'SUPERSECRETKEYSKRKT'
-
-# Database setup
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///news_site.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-# We import the models **AFTER** initializing the database
-# Starts the server
+import flask_models
 
 
 def StartServer(ip, port, debugValue=False):
@@ -50,17 +34,17 @@ def login_required(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
-            flash("Login to acces the news page")
+            flash("Log in om de nieuwswebsite te bekijken")
             return redirect('/news/login')
 
     return wrap
 
-# Flask app routes are defined here
+
 @app.route('/news/')
 @login_required
 def index():
-    all_posts = flask_models.Post.query.all()
-    return render_template('index.html', data=all_posts)
+    all_posts = flask_models.Post.query.filter_by(active=1).all()
+    return render_template('index.html', data=all_posts, admin=session.get("admin"))
 
 # Route for the login page
 @app.route('/news/login', methods=["POST", "GET"])
@@ -68,45 +52,101 @@ def login():
     if request.method == "GET":
         if 'logged_in' in session:
             return redirect('/news')
-        return render_template('login.html')
+        return render_template('login.html', session=session.get("logged_in"))
     else:
         username = request.form["username"]
         password = request.form["password"]
 
         user = flask_models.User.query.filter_by(
             username=username, password=password).first()
+
         if user is not None:
+            if user.admin == 1:
+                session["admin"] = True
+            session["user_id"] = user.id
             session["logged_in"] = True
             return redirect('/news')
         else:
             return redirect('/news/login')
 
-# Route for creating a new post
-@app.route('/news/sendnews', methods=["POST"])
+
+@app.route('/news/logout')
+def logout():
+    session.clear()
+    return redirect("/news/login")
+
+
+@app.route('/news/create', methods=["POST"])
 @login_required
-def sendnews():
+def createpost():
     postTitle = request.form['post_title']
     postContent = request.form['post_content']
     newPost = flask_models.Post(title=postTitle, content=postContent)
     db.session.add(newPost)
     db.session.commit()
-    flash("Post created succesfully!")
+    flash("Nieuwsbericht succesvol aangemaakt")
     return redirect('/news')
 
 # Route for getting the latest news
-@app.route('/news/getnews', methods=["GET"])
+@app.route('/news/get', methods=["GET"])
 def getnews():
     all_posts = flask_models.Post.query.limit(5).all()
+
     return jsonify(posts=[
         i.serialize() for i in all_posts
     ])
 
 
 @app.route('/news/delete', methods=["POST"])
-def deleteitem():
-    item_id = request.form["deletebutton"]
-    flask_models.Post.query.filter_by(id=item_id).delete()
-    return redirect('/news')
+def deletenews():
+    post_id = request.form["deletebutton"]
+    post = flask_models.Post.query.filter_by(id=post_id).first()
+    post.active = 0
+
+    db.session.commit()
+
+    return redirect("/news")
+
+
+@app.route('/news/users/add', methods=["POST", "GET"])
+def addusers():
+    if request.method == "GET":
+        return render_template('adduser.html', admin=session.get("admin"))
+    else:
+        username = request.form['username']
+        password = request.form['password']
+
+        newuser = flask_models.User(username=username, password=password)
+        db.session.add(newuser)
+        db.session.commit()
+
+        flash("Gebruiker succesvol toegevoegd")
+        return redirect('/news')
+
+
+@app.route('/news/users/manage', methods=["POST", "GET"])
+def deleteusers():
+    if request.method == "GET":
+        users = flask_models.User.query.all()
+        return render_template("users.html", users=users, admin=session.get("admin"))
+    else:
+        if "adminbutton" in request.form:
+            user_id = request.form["adminbutton"]
+            user = flask_models.User.query.filter_by(id=user_id).first()
+            user.admin = 1
+            db.session.commit()
+            flash(
+                f"Gebruiker {user.username} succesvol toegevoegd aan beheerders!")
+        elif "deletebutton" in request.form:
+            user_id = request.form["deletebutton"]
+            if str(user_id) == str(session["user_id"]):
+                flash("Je kan niet jezelf verwijderen!")
+                return redirect("/news/users/manage")
+            user = flask_models.User.query.filter_by(id=user_id).first()
+            db.session.delete(user)
+            db.session.commit()
+            flash(f"Gebruiker {user.username} succesvol verwijderd!")
+    return redirect("/news/users/manage", admin=session.get("admin"))
 
 
 @app.route("/mirror")

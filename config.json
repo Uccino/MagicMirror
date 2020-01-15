@@ -22,7 +22,7 @@
         }
     },
     "news": {
-        "url": "http://192.168.2.12:8080/news/getnews"
+        "url": "http://192.168.2.12:8080/news/get"
     },
     "lora-mqtt": {
         "url": "mqtt.eclipse.org",
