@@ -71,6 +71,7 @@ def login():
 
 
 @app.route('/news/logout')
+@login_required
 def logout():
     session.clear()
     return redirect("/news/login")
@@ -98,6 +99,7 @@ def getnews():
 
 
 @app.route('/news/delete', methods=["POST"])
+@login_required
 def deletenews():
     post_id = request.form["deletebutton"]
     post = flask_models.Post.query.filter_by(id=post_id).first()
@@ -109,24 +111,35 @@ def deletenews():
 
 
 @app.route('/news/users/add', methods=["POST", "GET"])
+@login_required
 def addusers():
     if request.method == "GET":
+        if "admin" not in session:
+            return redirect("/news")
         return render_template('adduser.html', admin=session.get("admin"))
     else:
         username = request.form['username']
         password = request.form['password']
 
-        newuser = flask_models.User(username=username, password=password)
-        db.session.add(newuser)
-        db.session.commit()
-
-        flash("Gebruiker succesvol toegevoegd")
-        return redirect('/news')
+        existing_user = flask_models.User.query.filter_by(
+            username=username).first()
+        if existing_user is None:
+            newuser = flask_models.User(username=username, password=password)
+            db.session.add(newuser)
+            db.session.commit()
+            flash("Gebruiker succesvol toegevoegd")
+            return redirect('/news/users/add')
+        else:
+            flash("Een gebruiker met deze gebruikersnaam bestaat al")
+            return redirect('/news/users/add')
 
 
 @app.route('/news/users/manage', methods=["POST", "GET"])
+@login_required
 def deleteusers():
     if request.method == "GET":
+        if "admin" not in session:
+            return redirect("/news")
         users = flask_models.User.query.all()
         return render_template("users.html", users=users, admin=session.get("admin"))
     else:

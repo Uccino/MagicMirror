@@ -83,10 +83,14 @@ def main():
     notification_refresh_thread.daemon = True
     notification_refresh_thread.start()
 
-    # This is going to be changed in a pywebview but I cba right now as
-    # it is not that important for the functionality of the software.
-    while 1:
-        pass
+    mirror_url = "http://" + \
+        mirrorConfig["webserver"]["ip"] + ":" + \
+        str(mirrorConfig["webserver"]["port"]) + "/mirror"
+
+    print(mirror_url)
+    webview.create_window(
+        title="Mirror page", url=mirror_url, width=1920, height=1080)
+    webview.start()
 
 
 def RefreshNotifications(mirror_connection, mirror_data, refresh_interval):
