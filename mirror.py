@@ -10,7 +10,8 @@ import os
 import sys
 import json
 import threading
-import webview
+import subprocess
+
 import time
 
 __PLATFORM = sys.platform
@@ -88,9 +89,12 @@ def main():
         str(mirrorConfig["webserver"]["port"]) + "/mirror"
 
     print(mirror_url)
-    webview.create_window(
-        title="Mirror page", url=mirror_url, width=1920, height=1080)
-    webview.start()
+    StartElectronApplication(mirror_url)
+    
+def StartElectronApplication(mirror_url):
+    currentDirectory = os.getcwd()
+    print(currentDirectory)
+    os.system("npm run start "+mirror_url+" --prefix " + currentDirectory )
 
 
 def RefreshNotifications(mirror_connection, mirror_data, refresh_interval):
