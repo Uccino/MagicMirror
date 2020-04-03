@@ -90,6 +90,8 @@ def main():
 
     print(mirror_url)
     StartElectronApplication(mirror_url)
+    while 1:
+        time.sleep(1)
     
 def StartElectronApplication(mirror_url):
     currentDirectory = os.getcwd()
@@ -164,26 +166,6 @@ def StartWebserver(mirrorConfig):
         return True
     except:
         return False
-
-
-def StartWebview(config):
-    """[Starts the pywebview]
-
-    Arguments:
-
-        config {[dict]} -- [Configuration read by ReadConfig()]
-    """
-
-    serverIp = config["webserver"]["ip"]
-    serverPort = config["webserver"]["port"]
-    serverUrl = f"http://{serverIp}:{serverPort}/mirror"
-    url = serverUrl
-    webview.create_window("SmartMirror", url=url)
-    webview.start()
-    # webviewThread = threading.Thread(target=webview.start, name="MainThread")
-    # webviewThread.daemon = True
-    # webviewThread.start()
-
 
 def ReadConfig(path="./config.json"):
     """Reads the configuration for the mirror

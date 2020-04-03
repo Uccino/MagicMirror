@@ -107,10 +107,10 @@ class CalendarRequester():
         config_path = None
         if platform == 'linux':
             token_path = "/Modules/Data/calendar_token.pickle"
-            config_path = "/Modules/data/calendar_config.json"
+            config_path = "/Modules/Data/calendar_config.json"
         else:
             token_path = "\Modules\Data\calendar_token.pickle"
-            config_path = "\Modules\data\calendar_config.json"
+            config_path = "\Modules\Data\calendar_config.json"
 
         # Check if there already is an authentication token
         if os.path.exists(f"{os.getcwd()}{token_path}"):
